@@ -1,8 +1,10 @@
 #include "Window.h"
 
+Window* window = nullptr;
+
 Window::Window()
 {
-
+	m_hwnd = NULL;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -12,11 +14,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_CREATE:
 		{
 			// Event fired when the window is created
+			window->onCreate();
 			break;
 		}
 		case WM_DESTROY:
 		{
 			// Event fired when the window is destroyed
+			window->onDestroy();
 			::PostQuitMessage(0);
 			break;
 		}
@@ -51,6 +55,11 @@ bool Window::init()
 		return false;
 	}
 
+	if (!window)
+	{
+		window = this;
+	}
+
 	m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, className, "DirectX Application", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720,
 		NULL, NULL, NULL, NULL);
 
@@ -63,6 +72,26 @@ bool Window::init()
 	::ShowWindow(m_hwnd, SW_SHOW);
 	::UpdateWindow(m_hwnd);
 
+	// Set this flag to true to indicate that the window is initialized and running
+	m_is_run = true;
+
+	return true;
+}
+
+bool Window::broadcast()
+{
+	MSG msg;
+
+	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0)
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	window->onUpdate();
+
+	Sleep(0);
+
 	return true;
 }
 
@@ -74,6 +103,16 @@ bool Window::release()
 		return false;
 	}
 	return true;
+}
+
+bool Window::isRunning()
+{
+	return m_is_run;
+}
+
+void Window::onDestroy()
+{
+	m_is_run = false;
 }
 
 Window::~Window()
