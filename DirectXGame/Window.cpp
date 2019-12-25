@@ -83,15 +83,15 @@ bool Window::broadcast()
 {
 	MSG msg;
 
+	window->onUpdate();
+
 	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0)
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
-	window->onUpdate();
-
-	Sleep(0);
+	Sleep(1);
 
 	return true;
 }
