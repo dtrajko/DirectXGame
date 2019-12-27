@@ -5,6 +5,7 @@
 
 class SwapChain;
 class VertexBuffer;
+class ConstantBuffer;
 class VertexShader;
 class PixelShader;
 
@@ -23,9 +24,16 @@ public:
 	void setVertexShader(VertexShader* vertex_shader);
 	void setPixelShader(PixelShader* pixel_shader);
 
+	void setConstantBuffer(VertexShader* vertex_shader, ConstantBuffer* buffer);
+	void setConstantBuffer(PixelShader* vertex_shader, ConstantBuffer* buffer);
+
 	bool release();
 	~DeviceContext();
 
 private:
 	ID3D11DeviceContext* m_device_context;
+
+private:
+	friend class ConstantBuffer;
+
 };

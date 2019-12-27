@@ -1,5 +1,7 @@
 #include "AppWindow.h"
 
+#include <Windows.h>
+
 
 struct vec3
 {
@@ -11,8 +13,17 @@ struct vec3
 struct vertex
 {
 	vec3 position;
+	vec3 position1;
 	vec3 color;
+	vec3 color1;
 };
+
+__declspec(align(16))
+struct constant
+{
+	unsigned int m_time;
+};
+
 
 AppWindow::AppWindow()
 {
@@ -30,12 +41,12 @@ void AppWindow::onCreate()
 
 	vertex list[] =
 	{
-		// POSITION             COLOR
-		// X   -  Y  -  Z       R  -  G  -  B
-		{ -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f }, // POS1 RED
-		{ -0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f }, // POS2 GREEN
-		{  0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f }, // POS3 BLUE
-		{  0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f }, // POS4 YELLOW
+		// POSITION               POSITION 1              COLOR              COLOR
+		// X   -  Y  -  Z         X   -   Y  -   Z        R  -  G  -  B        R  -  G  -  B
+		{ -0.5f, -0.5f, 0.0f,    -0.32f, -0.11f, 0.0f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f, 1.0f }, // POS1 RED
+		{ -0.5f,  0.5f, 0.0f,    -0.11f,  0.78f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f }, // POS2 GREEN
+		{  0.5f, -0.5f, 0.0f,     0.75f, -0.73f, 0.0f,    0.0f, 0.0f, 1.0f,    1.0f, 1.0f, 0.0f }, // POS3 BLUE
+		{  0.5f,  0.5f, 0.0f,     0.88f,  0.77f, 0.0f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f, 0.0f }, // POS4 YELLOW
 	};
 
 	m_vb = GraphicsEngine::get()->createVertexBuffer();
@@ -54,6 +65,12 @@ void AppWindow::onCreate()
 	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
 	m_ps = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->releaseCompiledShader();
+
+	constant cc;
+	cc.m_time = 0;
+
+	m_cb = GraphicsEngine::get()->createConstantBuffer();
+	m_cb->load(&cc, sizeof(constant));
 }
 
 void AppWindow::onUpdate()
@@ -66,6 +83,13 @@ void AppWindow::onUpdate()
 	// Set Viewport of render target in which we have to draw
 	RECT rect = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rect.right - rect.left, rect.bottom - rect.top);
+
+	constant cc;
+	cc.m_time = ::GetTickCount64();
+	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vs, m_cb);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_ps, m_cb);
 
 	// Set default shader in the graphics pipeline to be able to draw 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(m_vs);
