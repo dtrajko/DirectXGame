@@ -10,7 +10,6 @@
 struct vertex
 {
 	Vector3D position;
-	Vector3D position1;
 	Vector3D color;
 	Vector3D color1;
 };
@@ -39,18 +38,53 @@ void AppWindow::onCreate()
 	RECT rect = this->getClientWindowRect();
 	m_swap_chain->init(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
-	vertex list[] =
+	vertex vertex_list[] =
 	{
-		//          POSITION                      POSITION 1                     COLOR                       COLOR
-		//          X   -  Y  -  Z                X   -   Y  -   Z               R  -  G  -  B               R  -  G  -  B
-		{ Vector3D(-0.5f, -0.5f, 0.0f), Vector3D(-0.32f, -0.11f, 0.0f), Vector3D(1.0f, 0.0f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f) }, // POS1 RED
-		{ Vector3D(-0.5f,  0.5f, 0.0f), Vector3D(-0.11f,  0.78f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f), Vector3D(1.0f, 0.0f, 0.0f) }, // POS2 GREEN
-		{ Vector3D( 0.5f, -0.5f, 0.0f), Vector3D( 0.75f, -0.73f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f), Vector3D(1.0f, 1.0f, 0.0f) }, // POS3 BLUE
-		{ Vector3D( 0.5f,  0.5f, 0.0f), Vector3D( 0.88f,  0.77f, 0.0f), Vector3D(1.0f, 1.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f) }, // POS4 YELLOW
+		//          POSITION                      COLOR                       COLOR
+		//          X   -  Y  -  Z                R  -  G  -  B               R  -  G  -  B
+		// Front face
+		{ Vector3D(-0.5f, -0.5f, -0.5f), Vector3D(1.0f, 0.0f, 0.0f), Vector3D(1.0f, 0.0f, 0.0f) }, // POS0
+		{ Vector3D(-0.5f,  0.5f, -0.5f), Vector3D(0.0f, 1.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f) }, // POS1
+		{ Vector3D( 0.5f,  0.5f, -0.5f), Vector3D(0.0f, 0.0f, 1.0f), Vector3D(0.0f, 0.0f, 1.0f) }, // POS2
+		{ Vector3D( 0.5f, -0.5f, -0.5f), Vector3D(1.0f, 1.0f, 0.0f), Vector3D(1.0f, 1.0f, 0.0f) }, // POS3
+
+		// Back face
+		{ Vector3D( 0.5f, -0.5f,  0.5f), Vector3D(1.0f, 1.0f, 0.0f), Vector3D(1.0f, 0.0f, 0.0f) }, // POS4
+		{ Vector3D( 0.5f,  0.5f,  0.5f), Vector3D(0.0f, 0.0f, 1.0f), Vector3D(0.0f, 1.0f, 0.0f) }, // POS5
+		{ Vector3D(-0.5f,  0.5f,  0.5f), Vector3D(0.0f, 1.0f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f) }, // POS6
+		{ Vector3D(-0.5f, -0.5f,  0.5f), Vector3D(1.0f, 0.0f, 0.0f), Vector3D(1.0f, 1.0f, 0.0f) }, // POS7
 	};
 
 	m_vb = GraphicsEngine::get()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(list);
+	UINT size_vertex_list = ARRAYSIZE(vertex_list);
+
+	unsigned int index_list[] =
+	{
+		// Front side
+		0, 1, 2, // First triangle
+		2, 3, 0, // Second triangle
+		// Back side
+		4, 5, 6,
+		6, 7, 4,
+		// Top side
+		1, 6, 5,
+		5, 2, 1,
+		// Bottom side
+		7, 0, 3,
+		3, 4, 7,
+		// Right side
+		3, 2, 5,
+		5, 4, 3,
+		// Left side
+		7, 6, 1,
+		1, 0, 7,
+	};
+
+	m_ib = GraphicsEngine::get()->createIndexBuffer();
+	UINT size_index_list = ARRAYSIZE(index_list);
+
+	m_ib->load(index_list, size_index_list);
+
 
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
@@ -58,7 +92,7 @@ void AppWindow::onCreate()
 	// vertex shader
 	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
 	m_vs = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
-	m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	m_vb->load(vertex_list, sizeof(vertex), size_vertex_list, shader_byte_code, size_shader);
 	GraphicsEngine::get()->releaseCompiledShader();
 
 	// pixel shader
@@ -96,8 +130,12 @@ void AppWindow::onUpdate()
 	// Set the vertices of the triangle to draw
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
 
+	// Set index buffer
+	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(m_ib);
+
 	// Finally draw the triangle
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
+	// GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
+	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(m_ib->getSizeIndexList(), 0, 0);
 
 	m_swap_chain->present(true);
 
@@ -111,45 +149,66 @@ void AppWindow::updateQuadPosition()
 	constant cc;
 	cc.m_time = (unsigned int)::GetTickCount64();
 
-	cc.m_world.setTranslation(Vector3D(0.0f, 0.0f, 0.0f));
+	cc.m_world.setIdentity();
+	Matrix4x4 temp;
+	temp.setIdentity();
 
-	m_delta_scale += m_delta_time / 0.2f;
+	// Rotation
+	m_delta_rot += m_delta_time / 1.0f;
+
+	temp.setIdentity();
+	temp.setRotationZ(m_delta_rot);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(m_delta_rot);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationX(m_delta_rot);
+	cc.m_world *= temp;
+
+	// Translation
+	temp.setIdentity();
+	m_delta_pos += (m_delta_time / 2.0f);
+	float delta_pos_cos = sin(m_delta_pos);
+	std::cout << "delta_pos_sin: " << delta_pos_cos << std::endl;
+
+	Vector3D start_pos = Vector3D(0.0f, 0.0f, 0.0f);
+	Vector3D end_pos = Vector3D(1.6f, 0.0f, 0.0f);
+	temp.setTranslation(Vector3D::lerp(start_pos, end_pos, delta_pos_cos));
+	// cc.m_world.setTranslation(Vector3D(0.0f, 0.0f, 0.0f))
+	cc.m_world *= temp;
+
+	// Scaling
+	temp.setIdentity();
+	m_delta_scale += m_delta_time / 1.0f;
 	float delta_scale_sin = (sin(m_delta_scale) + 1.0f) / 2.0f;
 	Vector3D start_scale = Vector3D(0.6f, 0.6f, 0.0f);
 	Vector3D end_scale = Vector3D(1.2f, 1.2f, 0.0f);
-	cc.m_world.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
-
-	m_delta_pos += m_delta_time / 10.0f;
-	if (m_delta_pos > 1.0f)
-	{
-		m_delta_pos = 0.0f;
-	}
-	Vector3D start_pos = Vector3D(-1.0f, -1.0f, 0.0f);
-	Vector3D end_pos = Vector3D(1.0f, 1.0f, 0.0f);
-	// cc.m_world.setTranslation(Vector3D::lerp(start_pos, end_pos, m_delta_pos));
-
-	Matrix4x4 temp;
-	temp.setTranslation(Vector3D::lerp(start_pos, end_pos, m_delta_pos));
+	temp.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
+	// cc.m_world.setScale(Vector3D(1.0f, 1.0f, 1.0f));
 	cc.m_world *= temp;
 
 	cc.m_view.setIdentity();
 
 	RECT window_rect = this->getClientWindowRect();
 	cc.m_proj.setOrthoLH(
-		(window_rect.right - window_rect.left) / 400.0f,
-		(window_rect.bottom - window_rect.top) / 400.0f,
+		(window_rect.right - window_rect.left) / 200.0f,
+		(window_rect.bottom - window_rect.top) / 200.0f,
 		-4.0f,
 		4.0f
 	);
 
 	m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
-
 }
 
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
 	m_vb->release();
+	m_ib->release();
+	m_cb->release();
 	m_swap_chain->release();
 	m_vs->release();
 	m_ps->release();
