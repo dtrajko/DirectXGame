@@ -13,7 +13,6 @@ public:
 
 	// Initialize SwapChain for a window
 	bool init(HWND hwnd, UINT width, UINT height);
-
 	bool present(bool vsync);
 
 	// Release the SwapChain
