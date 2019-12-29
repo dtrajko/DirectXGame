@@ -18,6 +18,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			window->onCreate();
 			break;
 		}
+		case WM_SETFOCUS:
+		{
+			// Event fired when the window is in focus
+			window->onFocus();
+			break;
+		}
+		case WM_KILLFOCUS:
+		{
+			// Event fired when the window is in focus
+			window->onKillFocus();
+			break;
+		}
 		case WM_DESTROY:
 		{
 			// Event fired when the window is destroyed
@@ -136,6 +148,16 @@ void Window::onUpdate()
 void Window::onDestroy()
 {
 	m_is_run = false;
+}
+
+void Window::onFocus()
+{
+
+}
+
+void Window::onKillFocus()
+{
+
 }
 
 Window::~Window()

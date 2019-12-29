@@ -46,7 +46,26 @@ void InputSystem::update()
 				std::map<InputListener*, InputListener*>::iterator it = m_map_listeners.begin();
 				while (it != m_map_listeners.end())
 				{
-					it->second->onKeyDown(i);
+					if (m_keys_state[i] != m_old_keys_state[i])
+					{
+						if (i == VK_LBUTTON)
+						{
+							it->second->onLeftMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+						}
+						else if (i == VK_RBUTTON)
+						{
+							it->second->onRightMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+						}
+						else if (i == VK_MBUTTON)
+						{
+							it->second->onMiddleMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+						}
+					}
+					else
+					{
+						it->second->onKeyDown(i);
+					}
+
 					++it;
 				}
 			}
@@ -57,7 +76,23 @@ void InputSystem::update()
 					std::map<InputListener*, InputListener*>::iterator it = m_map_listeners.begin();
 					while (it != m_map_listeners.end())
 					{
-						it->second->onKeyUp(i);
+						if (i == VK_LBUTTON)
+						{
+							it->second->onLeftMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+						}
+						else if (i == VK_RBUTTON)
+						{
+							it->second->onRightMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+						}
+						else if (i == VK_MBUTTON)
+						{
+							it->second->onMiddleMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+						}
+						else
+						{
+							it->second->onKeyUp(i);
+						}
+
 						++it;
 					}
 				}

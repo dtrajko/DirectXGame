@@ -159,6 +159,17 @@ void AppWindow::updateQuadPosition()
 	Matrix4x4 temp;
 	temp.setIdentity();
 
+	// Scaling
+	// temp.setIdentity();
+	// m_delta_scale += m_delta_time / 1.0f;
+	// float delta_scale_sin = (sin(m_delta_scale) + 1.0f) / 2.0f;
+	// Vector3D start_scale = Vector3D(0.6f, 0.6f, 0.0f);
+	// Vector3D end_scale = Vector3D(1.2f, 1.2f, 0.0f);
+	// temp.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
+	// cc.m_world *= temp;
+
+	cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
+
 	// Rotation
 	m_delta_rot += m_delta_time / 1.0f;
 
@@ -186,16 +197,6 @@ void AppWindow::updateQuadPosition()
 	// // cc.m_world.setTranslation(Vector3D(0.0f, 0.0f, 0.0f))
 	// cc.m_world *= temp;
 
-	// Scaling
-	// temp.setIdentity();
-	// m_delta_scale += m_delta_time / 1.0f;
-	// float delta_scale_sin = (sin(m_delta_scale) + 1.0f) / 2.0f;
-	// Vector3D start_scale = Vector3D(0.6f, 0.6f, 0.0f);
-	// Vector3D end_scale = Vector3D(1.2f, 1.2f, 0.0f);
-	// temp.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
-	// // cc.m_world.setScale(Vector3D(1.0f, 1.0f, 1.0f));
-	// cc.m_world *= temp;
-
 	cc.m_view.setIdentity();
 
 	RECT window_rect = this->getClientWindowRect();
@@ -219,6 +220,16 @@ void AppWindow::onDestroy()
 	m_vs->release();
 	m_ps->release();
 	GraphicsEngine::get()->release();
+}
+
+void AppWindow::onFocus()
+{
+	InputSystem::get()->addListener(this);
+}
+
+void AppWindow::onKillFocus()
+{
+	InputSystem::get()->removeListener(this);
 }
 
 void AppWindow::onKeyDown(int key)
@@ -248,6 +259,36 @@ void AppWindow::onMouseMove(const Point& delta_mouse_pos)
 {
 	m_rot_x -= delta_mouse_pos.m_y * m_delta_time * 0.4f;
 	m_rot_y -= delta_mouse_pos.m_x * m_delta_time * 0.4f;
+}
+
+void AppWindow::onLeftMouseDown(const Point& mouse_pos)
+{
+	m_scale_cube = 0.5f;
+}
+
+void AppWindow::onLeftMouseUp(const Point& mouse_pos)
+{
+	m_scale_cube = 1.0f;
+}
+
+void AppWindow::onRightMouseDown(const Point& mouse_pos)
+{
+	m_scale_cube = 1.5f;
+}
+
+void AppWindow::onRightMouseUp(const Point& mouse_pos)
+{
+	m_scale_cube = 1.0f;
+}
+
+void AppWindow::onMiddleMouseDown(const Point& mouse_pos)
+{
+	m_scale_cube = 2.0f;
+}
+
+void AppWindow::onMiddleMouseUp(const Point& mouse_pos)
+{
+	m_scale_cube = 1.0f;
 }
 
 AppWindow::~AppWindow()
