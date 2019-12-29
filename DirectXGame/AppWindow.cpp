@@ -159,47 +159,24 @@ void AppWindow::updateQuadPosition()
 	Matrix4x4 temp;
 	temp.setIdentity();
 
-	// Scaling
-	// temp.setIdentity();
-	// m_delta_scale += m_delta_time / 1.0f;
-	// float delta_scale_sin = (sin(m_delta_scale) + 1.0f) / 2.0f;
-	// Vector3D start_scale = Vector3D(0.6f, 0.6f, 0.0f);
-	// Vector3D end_scale = Vector3D(1.2f, 1.2f, 0.0f);
-	// temp.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
-	// cc.m_world *= temp;
-
+	// Scale
 	cc.m_world.setScale(Vector3D(m_scale_cube, m_scale_cube, m_scale_cube));
 
 	// Rotation
 	m_delta_rot += m_delta_time / 1.0f;
-
-	// temp.setIdentity();
-	// temp.setRotationZ(0.0f);
-	// cc.m_world *= temp;
-	// 
-	// temp.setIdentity();
-	// temp.setRotationY(m_rot_y);
-	// cc.m_world *= temp;
-	// 
-	// temp.setIdentity();
-	// temp.setRotationX(m_rot_x);
-	// cc.m_world *= temp;
-
 	temp.setIdentity();
 	temp.setRotation(m_rot_x, m_rot_y, 0.0f);
 	cc.m_world *= temp;
 
 	// Translation
-	// temp.setIdentity();
-	// m_delta_pos += (m_delta_time / 2.0f);
-	// float delta_pos_cos = sin(m_delta_pos);
-	// // std::cout << "delta_pos_sin: " << delta_pos_cos << std::endl;
-	// 
-	// Vector3D start_pos = Vector3D(0.0f, 0.0f, 0.0f);
-	// Vector3D end_pos = Vector3D(1.6f, 0.0f, 0.0f);
-	// temp.setTranslation(Vector3D::lerp(start_pos, end_pos, delta_pos_cos));
-	// // cc.m_world.setTranslation(Vector3D(0.0f, 0.0f, 0.0f))
-	// cc.m_world *= temp;
+	temp.setIdentity();
+	m_delta_pos += (m_delta_time / 2.0f);
+	float delta_pos_cos = sin(m_delta_pos);
+
+	Vector3D start_pos = Vector3D(0.0f, 0.0f, 0.0f);
+	Vector3D end_pos = Vector3D(1.6f, 0.0f, 0.0f);
+	temp.setTranslation(Vector3D::lerp(start_pos, end_pos, delta_pos_cos));
+	cc.m_world *= temp;
 
 	cc.m_view.setIdentity();
 

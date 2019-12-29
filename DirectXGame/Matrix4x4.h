@@ -26,11 +26,19 @@ public:
 
 	void setTranslation(const Vector3D& translation)
 	{
-		setIdentity();
+		Matrix4x4 mat_in;
+		Matrix4x4 mat_trans;
 
-		m_mat[3][0] = translation.m_x;
-		m_mat[3][1] = translation.m_y;
-		m_mat[3][2] = translation.m_z;
+		::memcpy(mat_in.m_mat, m_mat, sizeof(float) * 16);
+		mat_trans.setIdentity();
+
+		mat_trans.m_mat[3][0] = translation.m_x;
+		mat_trans.m_mat[3][1] = translation.m_y;
+		mat_trans.m_mat[3][2] = translation.m_z;
+
+		mat_in *= mat_trans;
+
+		::memcpy(m_mat, mat_in.m_mat, sizeof(float) * 16);
 	}
 
 	void setRotationX(float x)
@@ -94,25 +102,6 @@ public:
 
 	void setRotation(float x, float y, float z)
 	{
-		// Matrix4x4 temp;
-		// Matrix4x4 out;
-		// 
-		// out.setIdentity();
-		//
-		// temp.setIdentity();
-		// temp.setRotationZ(z);
-		// out *= temp;
-		// 
-		// temp.setIdentity();
-		// temp.setRotationY(y);
-		// out *= temp;
-		//
-		// temp.setIdentity();
-		// temp.setRotationX(x);
-		// out *= temp;
-		//
-		// ::memcpy(m_mat, out.m_mat, sizeof(float) * 16);
-
 		setRotationX(x);
 		setRotationY(y);
 		setRotationZ(z);
