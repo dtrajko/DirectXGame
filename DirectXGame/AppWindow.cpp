@@ -173,16 +173,20 @@ void AppWindow::updateQuadPosition()
 	// Rotation
 	m_delta_rot += m_delta_time / 1.0f;
 
-	temp.setIdentity();
-	temp.setRotationZ(0.0f);
-	cc.m_world *= temp;
+	// temp.setIdentity();
+	// temp.setRotationZ(0.0f);
+	// cc.m_world *= temp;
+	// 
+	// temp.setIdentity();
+	// temp.setRotationY(m_rot_y);
+	// cc.m_world *= temp;
+	// 
+	// temp.setIdentity();
+	// temp.setRotationX(m_rot_x);
+	// cc.m_world *= temp;
 
 	temp.setIdentity();
-	temp.setRotationY(m_rot_y);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationX(m_rot_x);
+	temp.setRotation(m_rot_x, m_rot_y, 0.0f);
 	cc.m_world *= temp;
 
 	// Translation
