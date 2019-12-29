@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 #include "Vector3D.h"
 #include "Matrix4x4.h"
+#include "InputSystem.h"
 
 #include <iostream>
 #include <Windows.h>
@@ -32,6 +33,9 @@ AppWindow::AppWindow()
 void AppWindow::onCreate()
 {
 	Window::onCreate();
+
+	InputSystem::get()->addListener(this);
+
 	GraphicsEngine::get()->init();
 	m_swap_chain = GraphicsEngine::get()->createSwapChain();
 
@@ -111,6 +115,8 @@ void AppWindow::onUpdate()
 {
 	Window::onUpdate();
 
+	InputSystem::get()->update();
+
 	// Clear the render target
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(m_swap_chain, 0.2f, 0.4f, 0.8f, 1);
 
@@ -157,38 +163,38 @@ void AppWindow::updateQuadPosition()
 	m_delta_rot += m_delta_time / 1.0f;
 
 	temp.setIdentity();
-	temp.setRotationZ(m_delta_rot);
+	temp.setRotationZ(0.0f);
 	cc.m_world *= temp;
 
 	temp.setIdentity();
-	temp.setRotationY(m_delta_rot);
+	temp.setRotationY(m_rot_y);
 	cc.m_world *= temp;
 
 	temp.setIdentity();
-	temp.setRotationX(m_delta_rot);
+	temp.setRotationX(m_rot_x);
 	cc.m_world *= temp;
 
 	// Translation
-	temp.setIdentity();
-	m_delta_pos += (m_delta_time / 2.0f);
-	float delta_pos_cos = sin(m_delta_pos);
-	std::cout << "delta_pos_sin: " << delta_pos_cos << std::endl;
-
-	Vector3D start_pos = Vector3D(0.0f, 0.0f, 0.0f);
-	Vector3D end_pos = Vector3D(1.6f, 0.0f, 0.0f);
-	temp.setTranslation(Vector3D::lerp(start_pos, end_pos, delta_pos_cos));
-	// cc.m_world.setTranslation(Vector3D(0.0f, 0.0f, 0.0f))
-	cc.m_world *= temp;
+	// temp.setIdentity();
+	// m_delta_pos += (m_delta_time / 2.0f);
+	// float delta_pos_cos = sin(m_delta_pos);
+	// // std::cout << "delta_pos_sin: " << delta_pos_cos << std::endl;
+	// 
+	// Vector3D start_pos = Vector3D(0.0f, 0.0f, 0.0f);
+	// Vector3D end_pos = Vector3D(1.6f, 0.0f, 0.0f);
+	// temp.setTranslation(Vector3D::lerp(start_pos, end_pos, delta_pos_cos));
+	// // cc.m_world.setTranslation(Vector3D(0.0f, 0.0f, 0.0f))
+	// cc.m_world *= temp;
 
 	// Scaling
-	temp.setIdentity();
-	m_delta_scale += m_delta_time / 1.0f;
-	float delta_scale_sin = (sin(m_delta_scale) + 1.0f) / 2.0f;
-	Vector3D start_scale = Vector3D(0.6f, 0.6f, 0.0f);
-	Vector3D end_scale = Vector3D(1.2f, 1.2f, 0.0f);
-	temp.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
-	// cc.m_world.setScale(Vector3D(1.0f, 1.0f, 1.0f));
-	cc.m_world *= temp;
+	// temp.setIdentity();
+	// m_delta_scale += m_delta_time / 1.0f;
+	// float delta_scale_sin = (sin(m_delta_scale) + 1.0f) / 2.0f;
+	// Vector3D start_scale = Vector3D(0.6f, 0.6f, 0.0f);
+	// Vector3D end_scale = Vector3D(1.2f, 1.2f, 0.0f);
+	// temp.setScale(Vector3D::lerp(start_scale, end_scale, delta_scale_sin));
+	// // cc.m_world.setScale(Vector3D(1.0f, 1.0f, 1.0f));
+	// cc.m_world *= temp;
 
 	cc.m_view.setIdentity();
 
@@ -213,6 +219,29 @@ void AppWindow::onDestroy()
 	m_vs->release();
 	m_ps->release();
 	GraphicsEngine::get()->release();
+}
+
+void AppWindow::onKeyDown(int key)
+{
+	switch (key)
+	{
+	case 'W':
+		m_rot_x += 3.0f * m_delta_time;
+		break;
+	case 'S':
+		m_rot_x -= 3.0f * m_delta_time;
+		break;
+	case 'A':
+		m_rot_y += 3.0f * m_delta_time;
+		break;
+	case 'D':
+		m_rot_y -= 3.0f * m_delta_time;
+		break;
+	}
+}
+
+void AppWindow::onKeyUp(int key)
+{
 }
 
 AppWindow::~AppWindow()
