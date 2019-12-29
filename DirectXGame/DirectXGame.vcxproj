@@ -147,6 +147,7 @@
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vector3D.h" />
     <ClInclude Include="PixelShader.h" />
