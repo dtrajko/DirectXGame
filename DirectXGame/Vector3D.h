@@ -31,6 +31,16 @@ public:
 		return v;
 	}
 
+	Vector3D operator *(float scalar)
+	{
+		return Vector3D(m_x * scalar, m_y * scalar, m_z * scalar);
+	}
+
+	Vector3D operator +(Vector3D other)
+	{
+		return Vector3D(m_x + other.m_x, m_y + other.m_y, m_z + other.m_z);
+	}
+
 	void print()
 	{
 		std::cout << "[x]: " << m_x << " [y]: " << m_y << " [z]: " << m_z << std::endl;
