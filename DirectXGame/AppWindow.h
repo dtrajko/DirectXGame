@@ -67,4 +67,6 @@ private:
 	float cam_speed = 0.02f;
 	float mouse_speed = 0.2f;
 
+	int width;
+	int height;
 };

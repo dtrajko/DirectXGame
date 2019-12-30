@@ -120,6 +120,9 @@ void AppWindow::onUpdate()
 
 	InputSystem::get()->update();
 
+	width = this->getClientWindowRect().right - this->getClientWindowRect().left;
+	height = this->getClientWindowRect().bottom - this->getClientWindowRect().top;
+
 	// Clear the render target
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(m_swap_chain, 0.2f, 0.4f, 0.8f, 1);
 
@@ -202,10 +205,7 @@ void AppWindow::update()
 
 	cc.m_view = world_cam;
 
-	RECT window_rect = this->getClientWindowRect();
 	float fov = 1.0f; // 1.57f;
-	int width = window_rect.right - window_rect.left;
-	int height = window_rect.bottom - window_rect.top;
 	float aspect = (float)width / (float)height;
 	float znear = 0.1f;
 	float zfar = 100.0f;
@@ -283,10 +283,6 @@ void AppWindow::onKeyUp(int key)
 
 void AppWindow::onMouseMove(const Point& mouse_pos)
 {
-	RECT window_rect = this->getClientWindowRect();
-	int width = window_rect.right - window_rect.left;
-	int height = window_rect.bottom - window_rect.top;
-
 	m_rot_x += (mouse_pos.m_y - (height / 2.0f)) * m_delta_time * mouse_speed;
 	m_rot_y += (mouse_pos.m_x - (width / 2.0f)) * m_delta_time * mouse_speed;
 
