@@ -155,10 +155,9 @@ void RenderSystem::releaseCompiledShader()
 
 RenderSystem::~RenderSystem()
 {
-	// delete m_dxgi_device;
-	// delete m_imm_device_context;
-	// delete m_dxgi_factory;
-	// ddelete m_dxgi_adapter;
-	// delete m_d3d_device;
-	// delete m_imm_context;
+	m_dxgi_device->Release();
+	m_dxgi_factory->Release();
+	m_dxgi_adapter->Release();
+	m_d3d_device->Release();
+	m_imm_context->Release();
 }
