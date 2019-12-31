@@ -6,8 +6,11 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 
+#include <exception>
 
-DeviceContext::DeviceContext(ID3D11DeviceContext* device_context): m_device_context(device_context)
+
+DeviceContext::DeviceContext(ID3D11DeviceContext* device_context, RenderSystem* system):
+	m_device_context(device_context), m_system(system)
 {
 }
 
@@ -68,6 +71,7 @@ void DeviceContext::setVertexShader(VertexShader* vertex_shader)
 
 void DeviceContext::setPixelShader(PixelShader* pixel_shader)
 {
+	if (!pixel_shader) return;
 	m_device_context->PSSetShader(pixel_shader->m_ps, nullptr, 0);
 }
 
@@ -81,14 +85,6 @@ void DeviceContext::setConstantBuffer(PixelShader* vertex_shader, ConstantBuffer
 	m_device_context->PSSetConstantBuffers(0, 1, &buffer->m_buffer);
 }
 
-bool DeviceContext::release()
-{
-	m_device_context->Release();
-	delete this;
-	return true;
-}
-
 DeviceContext::~DeviceContext()
 {
-
 }

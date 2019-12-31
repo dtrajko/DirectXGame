@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Window.h"
-#include "GraphicsEngine.h"
+#include "RenderSystem.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"
 #include "VertexBuffer.h"
@@ -39,6 +39,7 @@ public:
 	virtual void onMiddleMouseUp(const Point& mouse_pos) override;
 
 private:
+	RenderSystem* m_render_system;
 	SwapChain* m_swap_chain;
 	VertexBuffer* m_vb;
 	IndexBuffer* m_ib;
@@ -67,6 +68,6 @@ private:
 	float cam_speed = 0.02f;
 	float mouse_speed = 0.2f;
 
-	int width;
-	int height;
+	float width;
+	float height;
 };

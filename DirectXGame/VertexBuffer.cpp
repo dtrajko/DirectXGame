@@ -1,22 +1,11 @@
 #include "VertexBuffer.h"
-#include "GraphicsEngine.h"
+#include "RenderSystem.h"
+
+#include <exception>
 
 
-VertexBuffer::VertexBuffer(): m_buffer(0), m_layout(0)
+VertexBuffer::VertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader, RenderSystem* system): m_system(system), m_buffer(0), m_layout(0)
 {
-}
-
-bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader)
-{
-	if (m_buffer)
-	{
-		m_buffer->Release();
-	}
-	if (m_layout)
-	{
-		m_layout->Release();
-	}
-
 	D3D11_BUFFER_DESC buff_desc = {};
 	buff_desc.Usage = D3D11_USAGE_DEFAULT;
 	buff_desc.ByteWidth = size_vertex * size_list;
@@ -30,10 +19,10 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list, v
 	m_size_vertex = size_vertex;
 	m_size_list = size_list;
 
-	HRESULT hr = GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer);
+	HRESULT hr = m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer);
 	if (FAILED(hr))
 	{
-		return false;
+		throw std::exception("VertexBuffer failed to initialize.");
 	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -47,13 +36,11 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list, v
 
 	UINT size_layout = ARRAYSIZE(layout);
 
-	hr = GraphicsEngine::get()->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &m_layout);
+	hr = m_system->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &m_layout);
 	if (FAILED(hr))
 	{
-		return false;
+		throw std::exception("CreateInputLayout failed.");
 	}
-
-	return true;
 }
 
 UINT VertexBuffer::getSizeVertexList()
@@ -61,23 +48,8 @@ UINT VertexBuffer::getSizeVertexList()
 	return this->m_size_list;
 }
 
-bool VertexBuffer::release()
-{
-	if (m_buffer)
-	{
-		m_buffer->Release();
-	}
-	if (m_layout)
-	{
-		m_layout->Release();
-	}
-
-	delete this;
-
-	return true;
-}
-
 VertexBuffer::~VertexBuffer()
 {
-
+	m_buffer->Release();
+	m_layout->Release();
 }
