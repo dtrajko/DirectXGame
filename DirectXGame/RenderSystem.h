@@ -16,21 +16,13 @@ public:
 	VertexBuffer* createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader);
 	IndexBuffer* createIndexBuffer(void* list_indices, UINT size_list);
 	ConstantBuffer* createConstantBuffer(void* buffer, UINT size_buffer);
-
 	VertexShader* createVertexShader(const void* shader_byte_code, size_t byte_code_size);
 	PixelShader* createPixelShader(const void* shader_byte_code, size_t byte_code_size);
-
 	bool compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
 	bool compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
-
 	void releaseCompiledShader();
-
+	void release();
 	~RenderSystem();
-
-private:
-
-	// Initialize the GraphicsEngine and DirectX 11 Device
-	bool init();
 
 private:
 	DeviceContext* m_imm_device_context;

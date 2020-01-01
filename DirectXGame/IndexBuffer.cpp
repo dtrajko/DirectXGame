@@ -21,7 +21,7 @@ IndexBuffer::IndexBuffer(void* list_indices, UINT size_list, RenderSystem* syste
 	HRESULT hr = m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer);
 	if (FAILED(hr))
 	{
-		throw std::exception("IndexBuffer failed to initialize.");
+		throw std::exception("IndexBuffer initialization failed.");
 	}
 }
 

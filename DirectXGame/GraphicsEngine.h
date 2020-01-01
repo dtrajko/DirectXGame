@@ -15,9 +15,6 @@ public:
 	~GraphicsEngine();
 
 private:
-	bool init();
-
-private:
 	RenderSystem* m_render_system = nullptr;
 
 };

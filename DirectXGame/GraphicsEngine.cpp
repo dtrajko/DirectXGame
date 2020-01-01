@@ -7,14 +7,7 @@
 
 GraphicsEngine::GraphicsEngine()
 {
-	init();
-}
-
-bool GraphicsEngine::init()
-{
 	m_render_system = new RenderSystem();
-	m_render_system->init();
-	return true;
 }
 
 GraphicsEngine* GraphicsEngine::get()
@@ -30,5 +23,6 @@ RenderSystem* GraphicsEngine::getRenderSystem()
 
 GraphicsEngine::~GraphicsEngine()
 {
+	m_render_system->release();
 	delete m_render_system;
 }

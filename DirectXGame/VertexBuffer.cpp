@@ -22,7 +22,7 @@ VertexBuffer::VertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list
 	HRESULT hr = m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer);
 	if (FAILED(hr))
 	{
-		throw std::exception("VertexBuffer failed to initialize.");
+		throw std::exception("VertexBuffer initialization failed.");
 	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -39,7 +39,7 @@ VertexBuffer::VertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list
 	hr = m_system->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &m_layout);
 	if (FAILED(hr))
 	{
-		throw std::exception("CreateInputLayout failed.");
+		throw std::exception("VertexBuffer: CreateInputLayout failed.");
 	}
 }
 

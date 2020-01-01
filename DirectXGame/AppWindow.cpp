@@ -83,28 +83,28 @@ void AppWindow::onCreate()
 	};
 
 	// Vertex buffer
+	UINT size_vertex_list = ARRAYSIZE(vertex_list);
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
-	UINT size_vertex_list = ARRAYSIZE(vertex_list);
+
+	// Vertex shader
+	m_render_system->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
+	m_vb = m_render_system->createVertexBuffer(vertex_list, sizeof(vertex), size_vertex_list, shader_byte_code, size_shader);
+	m_vs = m_render_system->createVertexShader(shader_byte_code, size_shader);
+	m_render_system->releaseCompiledShader();
+
+	// Pixel shader
+	m_render_system->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
+	m_ps = m_render_system->createPixelShader(shader_byte_code, size_shader);
+	m_render_system->releaseCompiledShader();
 
 	// Index buffer
 	UINT size_index_list = ARRAYSIZE(index_list);
 	m_ib = m_render_system->createIndexBuffer(index_list, size_index_list);
 
-	// vertex shader
-	m_render_system->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
-	m_vs = m_render_system->createVertexShader(shader_byte_code, size_shader);
-	m_vb = m_render_system->createVertexBuffer(vertex_list, sizeof(vertex), size_vertex_list, shader_byte_code, size_shader);
-	m_render_system->releaseCompiledShader();
-
-	// pixel shader
-	m_render_system->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
-	m_ps = m_render_system->createPixelShader(shader_byte_code, size_shader);
-	m_render_system->releaseCompiledShader();
-
+	// Constant buffer
 	constant cc;
 	cc.m_time = 0;
-
 	m_cb = m_render_system->createConstantBuffer(&cc, sizeof(constant));
 }
 
@@ -314,5 +314,4 @@ AppWindow::~AppWindow()
 	delete m_ib;
 	delete m_vb;
 	delete m_swap_chain;
-	// delete m_render_system;
 }

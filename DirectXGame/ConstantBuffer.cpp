@@ -20,7 +20,7 @@ ConstantBuffer::ConstantBuffer(void* buffer, UINT size_buffer, RenderSystem* sys
 	HRESULT hr = m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer);
 	if (FAILED(hr))
 	{
-		throw std::exception("ConstantBuffer failed to initialize.");
+		throw std::exception("ConstantBuffer initialization failed.");
 	}
 }
 

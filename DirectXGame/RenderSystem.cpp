@@ -13,11 +13,6 @@
 
 RenderSystem::RenderSystem()
 {
-	init();
-}
-
-bool RenderSystem::init()
-{
 	D3D_DRIVER_TYPE driver_types[] =
 	{
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -47,7 +42,7 @@ bool RenderSystem::init()
 
 	if (FAILED(res))
 	{
-		return false;
+		throw std::exception("RenderSystem: D3D11CreateDevice failed.");
 	}
 
 	m_imm_device_context = new DeviceContext(m_imm_context, this);
@@ -55,13 +50,20 @@ bool RenderSystem::init()
 	m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&m_dxgi_device);
 	m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&m_dxgi_adapter);
 	m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)&m_dxgi_factory);
-
-	return true;
 }
 
 SwapChain* RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
-	return new SwapChain(hwnd, width, height, this);
+	SwapChain* sc = nullptr;
+	try
+	{
+		sc = new SwapChain(hwnd, width, height, this);
+	}
+	catch (const std::exception&)
+	{
+		throw std::exception("SwapChain initialization failed.");
+	}
+	return sc;
 }
 
 DeviceContext* RenderSystem::getImmediateDeviceContext()
@@ -71,48 +73,71 @@ DeviceContext* RenderSystem::getImmediateDeviceContext()
 
 VertexBuffer* RenderSystem::createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader)
 {
-	return new VertexBuffer(list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader, this);
+	VertexBuffer * vb = nullptr;
+	try
+	{
+		vb = new VertexBuffer(list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader, this);
+	}
+	catch (const std::exception&)
+	{
+		throw std::exception("VertexBuffer initialization failed.");
+	}
+	return vb;
 }
 
 IndexBuffer* RenderSystem::createIndexBuffer(void* list_indices, UINT size_list)
 {
-	return new IndexBuffer(list_indices, size_list, this);
+	IndexBuffer* ib = nullptr;
+	try
+	{
+		ib = new IndexBuffer(list_indices, size_list, this);
+	}
+	catch (const std::exception&)
+	{
+		throw std::exception("IndexBuffer initialization failed.");
+	}
+	return ib;
 }
 
 ConstantBuffer* RenderSystem::createConstantBuffer(void* buffer, UINT size_buffer)
 {
-	return new ConstantBuffer(buffer, size_buffer, this);
+	ConstantBuffer* cb = nullptr;
+	try
+	{
+		cb = new ConstantBuffer(buffer, size_buffer, this);
+	}
+	catch (const std::exception&)
+	{
+		throw std::exception("ConstantBuffer initialization failed.");
+	}
+	return cb;
 }
 
 VertexShader* RenderSystem::createVertexShader(const void* shader_byte_code, size_t byte_code_size)
 {
 	VertexShader* vs = nullptr;
-	
 	try
 	{
 		vs = new VertexShader(shader_byte_code, byte_code_size, this);
 	}
 	catch (const std::exception&)
 	{
-		throw std::exception("VertexShader failed to initialize.");
+		throw std::exception("VertexShader initialization failed.");
 	}
-
 	return vs;
 }
 
 PixelShader* RenderSystem::createPixelShader(const void* shader_byte_code, size_t byte_code_size)
 {
 	PixelShader* ps = nullptr;
-
 	try
 	{
 		ps = new PixelShader(shader_byte_code, byte_code_size, this);
 	}
 	catch (const std::exception&)
 	{
-		throw std::exception("PixelShader failed to initialize.");
+		throw std::exception("PixelShader initialization failed.");
 	}
-
 	return ps;
 }
 
@@ -153,11 +178,16 @@ void RenderSystem::releaseCompiledShader()
 	if (m_blob) m_blob->Release();
 }
 
-RenderSystem::~RenderSystem()
+void RenderSystem::release()
 {
 	m_dxgi_device->Release();
 	m_dxgi_factory->Release();
 	m_dxgi_adapter->Release();
 	m_d3d_device->Release();
 	m_imm_context->Release();
+}
+
+RenderSystem::~RenderSystem()
+{
+	delete m_imm_device_context;
 }

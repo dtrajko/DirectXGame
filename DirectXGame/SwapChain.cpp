@@ -25,7 +25,7 @@ SwapChain::SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system): 
 
 	if (FAILED(hr))
 	{
-		throw std::exception("SwapChain failed to initialize.");
+		throw std::exception("SwapChain initialization failed.");
 	}
 
 	ID3D11Texture2D* buffer = NULL;
