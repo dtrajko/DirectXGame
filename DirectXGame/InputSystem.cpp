@@ -1,3 +1,14 @@
+// Copyright (c) 2019  PardCode.
+// All rights reserved.
+//
+// This file is part of CPP-3D-Game-Tutorial-Series Project, accessible from https://github.com/PardCode/CPP-3D-Game-Tutorial-Series
+// You can redistribute it and/or modify it under the terms of the GNU
+// General Public License 
+//
+// This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+// WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+
 #include "InputSystem.h"
 
 #include <Windows.h>
@@ -27,10 +38,10 @@ void InputSystem::update()
 	if (current_mouse_pos.x != m_old_mouse_pos.m_x || current_mouse_pos.y != m_old_mouse_pos.m_y)
 	{
 		// There is a mouse move event
-		std::map<InputListener*, InputListener*>::iterator it = m_map_listeners.begin();
-		while (it != m_map_listeners.end())
+		std::unordered_set<InputListener*>::iterator it = m_set_listeners.begin();
+		while (it != m_set_listeners.end())
 		{
-			it->second->onMouseMove(Point(current_mouse_pos.x, current_mouse_pos.y));
+			(*it)->onMouseMove(Point(current_mouse_pos.x, current_mouse_pos.y));
 			++it;
 		}
 	}
@@ -43,27 +54,27 @@ void InputSystem::update()
 			// Key is down
 			if (m_keys_state[i] & 0x80)
 			{
-				std::map<InputListener*, InputListener*>::iterator it = m_map_listeners.begin();
-				while (it != m_map_listeners.end())
+				std::unordered_set<InputListener*>::iterator it = m_set_listeners.begin();
+				while (it != m_set_listeners.end())
 				{
 					if (m_keys_state[i] != m_old_keys_state[i])
 					{
 						if (i == VK_LBUTTON)
 						{
-							it->second->onLeftMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onLeftMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
 						}
 						else if (i == VK_RBUTTON)
 						{
-							it->second->onRightMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onRightMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
 						}
 						else if (i == VK_MBUTTON)
 						{
-							it->second->onMiddleMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onMiddleMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
 						}
 					}
 					else
 					{
-						it->second->onKeyDown(i);
+						(*it)->onKeyDown(i);
 					}
 
 					++it;
@@ -73,24 +84,24 @@ void InputSystem::update()
 			{
 				if (m_keys_state[i] != m_old_keys_state[i])
 				{
-					std::map<InputListener*, InputListener*>::iterator it = m_map_listeners.begin();
-					while (it != m_map_listeners.end())
+					std::unordered_set<InputListener*>::iterator it = m_set_listeners.begin();
+					while (it != m_set_listeners.end())
 					{
 						if (i == VK_LBUTTON)
 						{
-							it->second->onLeftMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onLeftMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
 						}
 						else if (i == VK_RBUTTON)
 						{
-							it->second->onRightMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onRightMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
 						}
 						else if (i == VK_MBUTTON)
 						{
-							it->second->onMiddleMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onMiddleMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
 						}
 						else
 						{
-							it->second->onKeyUp(i);
+							(*it)->onKeyUp(i);
 						}
 
 						++it;
@@ -106,18 +117,12 @@ void InputSystem::update()
 
 void InputSystem::addListener(InputListener* listener)
 {
-	m_map_listeners.insert(std::make_pair<InputListener*, InputListener*>(
-		std::forward<InputListener*>(listener),
-		std::forward<InputListener*>(listener)));
+	m_set_listeners.insert(listener);
 }
 
 void InputSystem::removeListener(InputListener* listener)
 {
-	std::map<InputListener*, InputListener*>::iterator it = m_map_listeners.find(listener);
-	if (it != m_map_listeners.end())
-	{
-		m_map_listeners.erase(it);
-	}
+	m_set_listeners.erase(listener);
 }
 
 void InputSystem::setCursorPosition(const Point& pos)
