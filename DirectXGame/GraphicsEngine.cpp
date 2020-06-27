@@ -18,7 +18,11 @@
 
 GraphicsEngine::GraphicsEngine()
 {
-	m_render_system = new RenderSystem();
+	try
+	{
+		m_render_system = new RenderSystem();
+	}
+	catch (...) {}
 }
 
 GraphicsEngine* GraphicsEngine::get()
@@ -34,6 +38,5 @@ RenderSystem* GraphicsEngine::getRenderSystem()
 
 GraphicsEngine::~GraphicsEngine()
 {
-	m_render_system->release();
 	delete m_render_system;
 }

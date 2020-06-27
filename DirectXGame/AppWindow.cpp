@@ -319,10 +319,10 @@ void AppWindow::onDestroy()
 
 AppWindow::~AppWindow()
 {
-	delete m_ps;
-	delete m_vs;
-	delete m_cb;
-	delete m_ib;
-	delete m_vb;
-	delete m_swap_chain;
+	// delete m_ps;
+	// delete m_vs;
+	// delete m_cb;
+	// delete m_ib;
+	// delete m_vb;
+	// delete m_swap_chain;
 }
