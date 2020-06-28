@@ -37,10 +37,12 @@ public:
 	bool compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
 	void releaseCompiledShader();
 
+public:
+	ID3D11Device* m_d3d_device;
+
 private:
 	DeviceContextPtr m_imm_device_context;
 
-	ID3D11Device* m_d3d_device;
 	D3D_FEATURE_LEVEL m_feature_level;
 	IDXGIDevice* m_dxgi_device;
 	IDXGIAdapter* m_dxgi_adapter;
@@ -55,5 +57,6 @@ private:
 	friend class ConstantBuffer;
 	friend class VertexShader;
 	friend class PixelShader;
-	friend class GraphicsEngine;
+	friend class Texture;
+
 };
