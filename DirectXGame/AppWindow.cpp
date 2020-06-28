@@ -36,7 +36,6 @@ struct constant
 	unsigned int m_time;
 };
 
-
 AppWindow::AppWindow()
 {
 	m_render_system = GraphicsEngine::get()->getRenderSystem();

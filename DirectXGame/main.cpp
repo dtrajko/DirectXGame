@@ -9,19 +9,39 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
+#include "GraphicsEngine.h"
+#include "InputSystem.h"
 #include "AppWindow.h"
+
+#include <exception>
 
 
 int main()
 {
-	AppWindow app;
-	if (app.init())
+	try
 	{
-		while (app.isRunning())
+		GraphicsEngine::create();
+		InputSystem::create();
+	}
+	catch (...) { return -1; }
+
+	{
+		try
 		{
-			app.broadcast();
+			AppWindow app;
+			while (app.isRunning())
+			{
+				app.broadcast();
+			}
 		}
+		catch (...) {
+			InputSystem::release();
+			GraphicsEngine::release();
+			return -1;
+		};
 	}
 
+	InputSystem::release();
+	GraphicsEngine::release();
 	return 0;
 }

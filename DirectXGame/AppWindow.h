@@ -28,8 +28,10 @@ class AppWindow: public Window, public InputListener
 {
 public:
 	AppWindow();
-	void update();
 	~AppWindow();
+
+public:
+	void update();
 
 	// Inherited via Window
 	virtual void onCreate() override;
