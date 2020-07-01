@@ -11,6 +11,7 @@
 
 #include "AppWindow.h"
 #include "Vector3D.h"
+#include "Vector2D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "GraphicsEngine.h"
@@ -23,8 +24,7 @@
 struct vertex
 {
 	Vector3D position;
-	Vector3D color;
-	Vector3D color1;
+	Vector2D texcoord;
 };
 
 __declspec(align(16))
@@ -48,26 +48,72 @@ void AppWindow::onCreate()
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
 
+	m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/wood.jpg");
+
 	RECT rect = this->getClientWindowRect();
 	m_swap_chain = m_render_system->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
 	m_world_cam.setTranslation(Vector3D(0.0f, 0.0f, -4.0f));
 
-	vertex vertex_list[] =
+	Vector3D position_list[] =
 	{
-		//          POSITION                      COLOR                       COLOR
-		//          X   -  Y  -  Z                R  -  G  -  B               R  -  G  -  B
+		// POSITION      
+		// -------- X ---- Y ---- Z
 		// Front face
-		{ Vector3D(-0.5f, -0.5f, -0.5f), Vector3D(1.0f, 0.0f, 0.0f), Vector3D(1.0f, 0.0f, 0.0f) }, // POS0
-		{ Vector3D(-0.5f,  0.5f, -0.5f), Vector3D(0.0f, 1.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f) }, // POS1
-		{ Vector3D( 0.5f,  0.5f, -0.5f), Vector3D(0.0f, 0.0f, 1.0f), Vector3D(0.0f, 0.0f, 1.0f) }, // POS2
-		{ Vector3D( 0.5f, -0.5f, -0.5f), Vector3D(1.0f, 1.0f, 0.0f), Vector3D(1.0f, 1.0f, 0.0f) }, // POS3
+		{ Vector3D(-0.5f, -0.5f, -0.5f) }, // POS0
+		{ Vector3D(-0.5f,  0.5f, -0.5f) }, // POS1
+		{ Vector3D( 0.5f,  0.5f, -0.5f) }, // POS2
+		{ Vector3D( 0.5f, -0.5f, -0.5f) }, // POS3
 
 		// Back face
-		{ Vector3D( 0.5f, -0.5f,  0.5f), Vector3D(1.0f, 1.0f, 0.0f), Vector3D(1.0f, 0.0f, 0.0f) }, // POS4
-		{ Vector3D( 0.5f,  0.5f,  0.5f), Vector3D(0.0f, 0.0f, 1.0f), Vector3D(0.0f, 1.0f, 0.0f) }, // POS5
-		{ Vector3D(-0.5f,  0.5f,  0.5f), Vector3D(0.0f, 1.0f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f) }, // POS6
-		{ Vector3D(-0.5f, -0.5f,  0.5f), Vector3D(1.0f, 0.0f, 0.0f), Vector3D(1.0f, 1.0f, 0.0f) }, // POS7
+		{ Vector3D( 0.5f, -0.5f,  0.5f) }, // POS4
+		{ Vector3D( 0.5f,  0.5f,  0.5f) }, // POS5
+		{ Vector3D(-0.5f,  0.5f,  0.5f) }, // POS6
+		{ Vector3D(-0.5f, -0.5f,  0.5f) }, // POS7
+	};
+
+	Vector2D texcoord_list[] =
+	{
+		// TEXCOORD
+		// -------- U --- V
+		{ Vector2D( 0.0f, 0.0f ) },
+		{ Vector2D( 0.0f, 1.0f ) },
+		{ Vector2D( 1.0f, 0.0f ) },
+		{ Vector2D( 1.0f, 1.0f ) },
+	};
+
+	vertex vertex_list[] =
+	{
+		// front side
+		{ position_list[0], texcoord_list[1]},
+		{ position_list[1], texcoord_list[0]},
+		{ position_list[2], texcoord_list[2]},
+		{ position_list[3], texcoord_list[3]},
+		// back side
+		{ position_list[4], texcoord_list[1]},
+		{ position_list[5], texcoord_list[0]},
+		{ position_list[6], texcoord_list[2]},
+		{ position_list[7], texcoord_list[3]},
+		// top side
+		{ position_list[1], texcoord_list[1]},
+		{ position_list[6], texcoord_list[0]},
+		{ position_list[5], texcoord_list[2]},
+		{ position_list[2], texcoord_list[3]},
+		// bottom side
+		{ position_list[7], texcoord_list[1]},
+		{ position_list[0], texcoord_list[0]},
+		{ position_list[3], texcoord_list[2]},
+		{ position_list[4], texcoord_list[3]},
+		// right side
+		{ position_list[3], texcoord_list[1]},
+		{ position_list[2], texcoord_list[0]},
+		{ position_list[5], texcoord_list[2]},
+		{ position_list[4], texcoord_list[3]},
+		// left side
+		{ position_list[7], texcoord_list[1]},
+		{ position_list[6], texcoord_list[0]},
+		{ position_list[1], texcoord_list[2]},
+		{ position_list[0], texcoord_list[3]},
 	};
 
 	unsigned int index_list[] =
@@ -79,17 +125,17 @@ void AppWindow::onCreate()
 		4, 5, 6,
 		6, 7, 4,
 		// Top side
-		1, 6, 5,
-		5, 2, 1,
+		 8,  9, 10,
+		10, 11,  8,
 		// Bottom side
-		7, 0, 3,
-		3, 4, 7,
+		12, 13, 14,
+		14, 15, 12,
 		// Right side
-		3, 2, 5,
-		5, 4, 3,
+		16, 17, 18,
+		18, 19, 16,
 		// Left side
-		7, 6, 1,
-		1, 0, 7,
+		20, 21, 22,
+		22, 23, 20,
 	};
 
 	// Vertex buffer
@@ -99,7 +145,7 @@ void AppWindow::onCreate()
 
 	// Vertex shader
 	m_render_system->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
-	m_vb = m_render_system->createVertexBuffer(vertex_list, sizeof(vertex), size_vertex_list, shader_byte_code, size_shader);
+	m_vb = m_render_system->createVertexBuffer(vertex_list, sizeof(vertex), size_vertex_list, shader_byte_code, (UINT)size_shader);
 	m_vs = m_render_system->createVertexShader(shader_byte_code, size_shader);
 	m_render_system->releaseCompiledShader();
 
@@ -142,6 +188,10 @@ void AppWindow::onUpdate()
 	// Set default shader in the graphics pipeline to be able to draw 
 	m_render_system->getImmediateDeviceContext()->setVertexShader(m_vs);
 	m_render_system->getImmediateDeviceContext()->setPixelShader(m_ps);
+
+	// Set texture
+	m_render_system->getImmediateDeviceContext()->setTexture(m_vs, m_wood_tex);
+	m_render_system->getImmediateDeviceContext()->setTexture(m_ps, m_wood_tex);
 
 	// Set the vertices of the triangle to draw
 	m_render_system->getImmediateDeviceContext()->setVertexBuffer(m_vb);

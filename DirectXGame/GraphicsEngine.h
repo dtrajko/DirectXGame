@@ -8,12 +8,14 @@
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-
 #pragma once
 
-#include <d3d11.h>
-
 #include "Prerequisites.h"
+
+#include "RenderSystem.h"
+#include "TextureManager.h"
+
+#include <d3d11.h>
 
 
 class GraphicsEngine
@@ -27,12 +29,14 @@ private:
 
 public:
 	RenderSystem* getRenderSystem();
+	TextureManager* getTextureManager();
 	static GraphicsEngine* get();
 	static void create();
 	static void release();
 
 private:
 	RenderSystem* m_render_system = nullptr;
+	TextureManager* m_tex_manager = nullptr;
 	static GraphicsEngine* m_engine;
 
 };

@@ -55,10 +55,11 @@ private:
 	RenderSystem* m_render_system;
 	SwapChainPtr m_swap_chain;
 	VertexBufferPtr m_vb;
-	IndexBufferPtr m_ib;
-	ConstantBufferPtr m_cb;
 	VertexShaderPtr m_vs;
 	PixelShaderPtr m_ps;
+	ConstantBufferPtr m_cb;
+	IndexBufferPtr m_ib;
+	TexturePtr m_wood_tex;
 
 	// Timer
 	float m_old_delta;

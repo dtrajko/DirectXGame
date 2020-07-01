@@ -10,7 +10,6 @@
 
 
 #include "GraphicsEngine.h"
-#include "RenderSystem.h"
 
 #include <d3dcompiler.h>
 #include <exception>
@@ -24,7 +23,13 @@ GraphicsEngine::GraphicsEngine()
 	{
 		m_render_system = new RenderSystem();
 	}
-	catch (...) { throw std::exception("GraphicsEngine not created successfully."); }
+	catch (...) { throw std::exception("RenderSystem not created successfully."); }
+
+	try
+	{
+		m_tex_manager = new TextureManager();
+	}
+	catch (...) { throw std::exception("TextureManager not created successfully."); }
 }
 
 GraphicsEngine* GraphicsEngine::get()
@@ -49,8 +54,14 @@ RenderSystem* GraphicsEngine::getRenderSystem()
 	return m_render_system;
 }
 
+TextureManager* GraphicsEngine::getTextureManager()
+{
+	return m_tex_manager;
+}
+
 GraphicsEngine::~GraphicsEngine()
 {
 	GraphicsEngine::m_engine = nullptr;
+	delete m_tex_manager;
 	delete m_render_system;
 }

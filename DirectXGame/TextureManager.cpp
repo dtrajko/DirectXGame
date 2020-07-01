@@ -3,12 +3,17 @@
 #include "Texture.h"
 
 
-TextureManager::TextureManager()
+TextureManager::TextureManager() : ResourceManager()
 {
 }
 
 TextureManager::~TextureManager()
 {
+}
+
+TexturePtr TextureManager::createTextureFromFile(const wchar_t* file_path)
+{
+	return std::static_pointer_cast<Texture>(createResourceFromFile(file_path));
 }
 
 Resource* TextureManager::createResourceFromFileConcrete(const wchar_t* file_path)
