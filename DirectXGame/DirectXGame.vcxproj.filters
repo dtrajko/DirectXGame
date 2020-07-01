@@ -52,6 +52,9 @@
     <Filter Include="GameEngine\GraphicsEngine\ResourceManager\TextureManager">
       <UniqueIdentifier>{84e5652c-6eb9-400a-bab7-b7ecc409d5e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\ResourceManager\MeshManager">
+      <UniqueIdentifier>{9c81128c-cb9b-4a9c-85c4-b4b3d0d64296}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -107,6 +110,12 @@
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>GameEngine\GraphicsEngine\ResourceManager\TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>GameEngine\GraphicsEngine\ResourceManager\MeshManager</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshManager.cpp">
+      <Filter>GameEngine\GraphicsEngine\ResourceManager\MeshManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +189,15 @@
       <Filter>GameEngine\GraphicsEngine\ResourceManager\TextureManager</Filter>
     </ClInclude>
     <ClInclude Include="Vector2D.h">
+      <Filter>GameEngine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>GameEngine\GraphicsEngine\ResourceManager\MeshManager</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshManager.h">
+      <Filter>GameEngine\GraphicsEngine\ResourceManager\MeshManager</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexMesh.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
   </ItemGroup>
