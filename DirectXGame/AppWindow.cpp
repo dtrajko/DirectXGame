@@ -15,6 +15,7 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "GraphicsEngine.h"
+#include "Mesh.h"
 
 #include <iostream>
 #include <Windows.h>
@@ -48,7 +49,8 @@ void AppWindow::onCreate()
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
 
-	m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/wood.jpg");
+	m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick.png");
+	m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/teapot.obj");
 
 	RECT rect = this->getClientWindowRect();
 	m_swap_chain = m_render_system->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
@@ -194,10 +196,10 @@ void AppWindow::onUpdate()
 	m_render_system->getImmediateDeviceContext()->setTexture(m_ps, m_wood_tex);
 
 	// Set the vertices of the triangle to draw
-	m_render_system->getImmediateDeviceContext()->setVertexBuffer(m_vb);
+	m_render_system->getImmediateDeviceContext()->setVertexBuffer(m_mesh->getVertexBuffer());
 
 	// Set index buffer
-	m_render_system->getImmediateDeviceContext()->setIndexBuffer(m_ib);
+	m_render_system->getImmediateDeviceContext()->setIndexBuffer(m_mesh->getIndexBuffer());
 
 	// Finally draw the triangle
 	// GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
@@ -326,7 +328,7 @@ void AppWindow::onKeyUp(int key)
 void AppWindow::onMouseMove(const Point& mouse_pos)
 {
 	m_rot_x += (mouse_pos.m_y - (height / 2.0f)) * m_delta_time * mouse_speed;
-	m_rot_y += (mouse_pos.m_x - (width / 2.0f)) * m_delta_time * mouse_speed;
+	m_rot_y += (mouse_pos.m_x - (width  / 2.0f)) * m_delta_time * mouse_speed;
 
 	InputSystem::get()->setCursorPosition(Point((int)(width / 2.0f), (int)(height / 2.0f)));
 }

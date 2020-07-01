@@ -12,6 +12,9 @@ public:
 	Mesh(const wchar_t* full_path);
 	virtual ~Mesh() override;
 
+	const VertexBufferPtr& getVertexBuffer();
+	const IndexBufferPtr& getIndexBuffer();
+
 private:
 	VertexBufferPtr m_vertex_buffer;
 	IndexBufferPtr m_index_buffer;

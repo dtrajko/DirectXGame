@@ -60,6 +60,7 @@ private:
 	ConstantBufferPtr m_cb;
 	IndexBufferPtr m_ib;
 	TexturePtr m_wood_tex;
+	MeshPtr m_mesh;
 
 	// Timer
 	float m_old_delta;
@@ -80,7 +81,7 @@ private:
 	Matrix4x4 m_world_cam;
 
 	float cam_speed = 0.02f;
-	float mouse_speed = 0.01f;
+	float mouse_speed = 0.02f;
 
 	float width;
 	float height;

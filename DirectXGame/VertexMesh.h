@@ -18,6 +18,10 @@ public:
 	{
 	}
 
+	VertexMesh(const VertexMesh& vertexMesh) : m_position(vertexMesh.m_position), m_texcoord(vertexMesh.m_texcoord)
+	{
+	}
+
 	~VertexMesh()
 	{
 	}

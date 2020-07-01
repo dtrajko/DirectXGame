@@ -201,4 +201,18 @@
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexMeshLayoutShader.hlsl">
+      <Filter>GameEngine\GraphicsEngine</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>GameEngine\GraphicsEngine</Filter>
+    </FxCompile>
+    <FxCompile Include="shader.fx">
+      <Filter>GameEngine\GraphicsEngine</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>GameEngine\GraphicsEngine</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>
