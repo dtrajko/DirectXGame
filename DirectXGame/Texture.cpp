@@ -1,16 +1,8 @@
 #include "Texture.h"
-
-#include "GraphicsEngine.h"
-#include "RenderSystem.h"
-
 #include <DirectXTex.h>
+#include "GraphicsEngine.h"
 
-
-Texture::Texture()
-{
-}
-
-Texture::Texture(const wchar_t* full_path)
+Texture::Texture(const wchar_t* full_path): Resource(full_path)
 {
 	DirectX::ScratchImage image_data;
 	HRESULT res = DirectX::LoadFromWICFile(full_path, DirectX::WIC_FLAGS_NONE, nullptr, image_data);
@@ -26,13 +18,15 @@ Texture::Texture(const wchar_t* full_path)
 		desc.Texture2D.MipLevels = (UINT)image_data.GetMetadata().mipLevels;
 		desc.Texture2D.MostDetailedMip = 0;
 
-		GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateShaderResourceView(m_texture, &desc, &m_shader_res_view);
+		GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateShaderResourceView(m_texture, &desc,
+			&m_shader_res_view);
 	}
 	else
 	{
-		throw std::exception("Texture not created successfully.");
+		throw std::exception("Texture not created successfully");
 	}
 }
+
 
 Texture::~Texture()
 {

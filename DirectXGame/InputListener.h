@@ -1,4 +1,4 @@
-// Copyright (c) 2019  PardCode.
+// Copyright (c) 2019 - 2020 PardCode
 // All rights reserved.
 //
 // This file is part of CPP-3D-Game-Tutorial-Series Project, accessible from https://github.com/PardCode/CPP-3D-Game-Tutorial-Series
@@ -10,30 +10,26 @@
 
 
 #pragma once
-
 #include "Point.h"
+
 
 
 class InputListener
 {
-
 public:
 	InputListener()
 	{
-
 	}
-	
 	~InputListener()
 	{
-
 	}
 
-	// Keyboard pure virtual callback functions
+	//KEYBOARD pure virtual callback functions 
 	virtual void onKeyDown(int key) = 0;
 	virtual void onKeyUp(int key) = 0;
 
-	// Mouse pure virtual callback functions
-	virtual void onMouseMove(const Point& mouse_pos) = 0;
+	//MOUSE pure virtual callback functions
+	virtual void onMouseMove(const Point& mouse_pos)=0;
 
 	virtual void onLeftMouseDown(const Point& mouse_pos) = 0;
 	virtual void onLeftMouseUp(const Point& mouse_pos) = 0;
@@ -41,6 +37,4 @@ public:
 	virtual void onRightMouseDown(const Point& mouse_pos) = 0;
 	virtual void onRightMouseUp(const Point& mouse_pos) = 0;
 
-	virtual void onMiddleMouseDown(const Point& mouse_pos) = 0;
-	virtual void onMiddleMouseUp(const Point& mouse_pos) = 0;
 };

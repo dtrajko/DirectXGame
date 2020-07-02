@@ -1,4 +1,4 @@
-// Copyright (c) 2019  PardCode.
+// Copyright (c) 2019 - 2020 PardCode
 // All rights reserved.
 //
 // This file is part of CPP-3D-Game-Tutorial-Series Project, accessible from https://github.com/PardCode/CPP-3D-Game-Tutorial-Series
@@ -10,36 +10,33 @@
 
 
 #include "Window.h"
-
 #include <exception>
-
-// Window* window = nullptr;
+//Window* window=nullptr;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	//GetWindowLong(hwnd,)
 	switch (msg)
 	{
 	case WM_CREATE:
 	{
 		// Event fired when the window is created
-		// window->setHWND(hwnd);
-		// window->onCreate();
+		// collected here..
+
 		break;
 	}
 	case WM_SETFOCUS:
 	{
-		// Event fired when the window is in focus
+		// Event fired when the window get focus
 		Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		if (window)
-			window->onFocus();
+		if (window) window->onFocus();
 		break;
 	}
 	case WM_KILLFOCUS:
 	{
-		// Event fired when the window is in focus
+		// Event fired when the window lost focus
 		Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		if (window)
-			window->onKillFocus();
+		window->onKillFocus();
 		break;
 	}
 	case WM_DESTROY:
@@ -50,20 +47,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		::PostQuitMessage(0);
 		break;
 	}
+
+
 	default:
-	{
 		return ::DefWindowProc(hwnd, msg, wparam, lparam);
-	}
 	}
 
 	return NULL;
 }
 
+
+
+
 Window::Window()
 {
-	m_is_init = false;
-
-	LPCSTR className = "MyWindowClass";
+	//Setting up WNDCLASSEX object
 	WNDCLASSEX wc;
 	wc.cbClsExtra = NULL;
 	wc.cbSize = sizeof(WNDCLASSEX);
@@ -73,36 +71,40 @@ Window::Window()
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hInstance = NULL;
-	wc.lpszClassName = className;
+	wc.lpszClassName = "MyWindowClass";
 	wc.lpszMenuName = "";
 	wc.style = NULL;
 	wc.lpfnWndProc = &WndProc;
 
-	if (!::RegisterClassEx(&wc)) // If the registration of class fails, the function returns false
-	{
-		throw std::exception("Window not created successfully.");
-	}
+	if (!::RegisterClassEx(&wc)) // If the registration of class will fail, the function will return false
+		throw std::exception("Window not created successfully");
 
-	// if (!window)
-	// {
-	// 	window = this;
-	// }
+	/*if (!window)
+	window = this;*/
 
-	m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, className, "DirectX Application", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1600, 900,
+	//Creation of the window
+	m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, "MyWindowClass", "DirectX Application",
+		WS_CAPTION | WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, 1024, 768,
 		NULL, NULL, NULL, NULL);
 
+	//if the creation fail return false
 	if (!m_hwnd)
-	{
-		throw std::exception("Window not created successfully.");
-	}
+		throw std::exception("Window not created successfully");
 
-	// Show up the window
+
+	//show up the window
 	::ShowWindow(m_hwnd, SW_SHOW);
 	::UpdateWindow(m_hwnd);
 
-	// Set this flag to true to indicate that the window is initialized and running
+
+
+
+	//set this flag to true to indicate that the window is initialized and running
 	m_is_run = true;
 }
+
+
+
 
 bool Window::broadcast()
 {
@@ -128,36 +130,27 @@ bool Window::broadcast()
 	return true;
 }
 
-bool Window::release()
-{
-	// Destroy the window
-	if (!::DestroyWindow(m_hwnd))
-	{
-		return false;
-	}
-	return true;
-}
 
-bool Window::isRunning()
+bool Window::isRun()
 {
+	if (m_is_run)
+		broadcast();
 	return m_is_run;
 }
 
 RECT Window::getClientWindowRect()
 {
-	RECT rect;
-	::GetClientRect(this->m_hwnd, &rect);
-	return rect;
+	RECT rc;
+	::GetClientRect(this->m_hwnd, &rc);
+	return rc;
 }
 
 void Window::onCreate()
 {
-
 }
 
 void Window::onUpdate()
 {
-
 }
 
 void Window::onDestroy()
@@ -167,15 +160,12 @@ void Window::onDestroy()
 
 void Window::onFocus()
 {
-
 }
 
 void Window::onKillFocus()
 {
-
 }
 
 Window::~Window()
 {
-
 }

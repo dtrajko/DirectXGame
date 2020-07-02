@@ -1,4 +1,4 @@
-// Copyright (c) 2019  PardCode.
+// Copyright (c) 2019 - 2020 PardCode
 // All rights reserved.
 //
 // This file is part of CPP-3D-Game-Tutorial-Series Project, accessible from https://github.com/PardCode/CPP-3D-Game-Tutorial-Series
@@ -8,12 +8,9 @@
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-
 #include "GraphicsEngine.h"
-
-#include <d3dcompiler.h>
+#include "RenderSystem.h"
 #include <exception>
-
 
 GraphicsEngine* GraphicsEngine::m_engine = nullptr;
 
@@ -23,19 +20,20 @@ GraphicsEngine::GraphicsEngine()
 	{
 		m_render_system = new RenderSystem();
 	}
-	catch (...) { throw std::exception("RenderSystem not created successfully."); }
+	catch (...) { throw std::exception("RenderSystem not created successfully"); }
 
 	try
 	{
 		m_tex_manager = new TextureManager();
 	}
-	catch (...) { throw std::exception("TextureManager not created successfully."); }
-
+	catch (...) { throw std::exception("TextureManager not created successfully"); }
+	
 	try
 	{
 		m_mesh_manager = new MeshManager();
 	}
-	catch (...) { throw std::exception("MeshManager not created successfully."); }
+	catch (...) { throw std::exception("MeshManager not created successfully"); }
+
 
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
@@ -43,41 +41,25 @@ GraphicsEngine::GraphicsEngine()
 	::memcpy(m_mesh_layout_byte_code, shader_byte_code, size_shader);
 	m_mesh_layout_size = size_shader;
 	m_render_system->releaseCompiledShader();
+
 }
 
-GraphicsEngine* GraphicsEngine::get()
-{
-	return m_engine;
-}
-
-void GraphicsEngine::create()
-{
-	if (GraphicsEngine::m_engine) throw std::exception("GraphicsEngine already created.");
-	GraphicsEngine::m_engine = new GraphicsEngine();
-}
-
-void GraphicsEngine::release()
-{
-	if (!GraphicsEngine::m_engine) return;
-	delete GraphicsEngine::m_engine;
-}
-
-RenderSystem* GraphicsEngine::getRenderSystem()
+RenderSystem * GraphicsEngine::getRenderSystem()
 {
 	return m_render_system;
 }
 
-TextureManager* GraphicsEngine::getTextureManager()
+TextureManager * GraphicsEngine::getTextureManager()
 {
 	return m_tex_manager;
 }
 
-MeshManager* GraphicsEngine::getMeshManager()
+MeshManager * GraphicsEngine::getMeshManager()
 {
 	return m_mesh_manager;
 }
 
-void GraphicsEngine::getVertexMeshLayoutShaderByteCodeAndSize(void** byte_code, size_t* size)
+void GraphicsEngine::getVertexMeshLayoutShaderByteCodeAndSize(void ** byte_code, size_t * size)
 {
 	*byte_code = m_mesh_layout_byte_code;
 	*size = m_mesh_layout_size;
@@ -89,4 +71,21 @@ GraphicsEngine::~GraphicsEngine()
 	delete m_mesh_manager;
 	delete m_tex_manager;
 	delete m_render_system;
+}
+
+void GraphicsEngine::create()
+{
+	if (GraphicsEngine::m_engine) throw std::exception("Graphics Engine already created");
+	GraphicsEngine::m_engine = new GraphicsEngine();
+}
+
+void GraphicsEngine::release() 
+{
+	if (!GraphicsEngine::m_engine) return;
+	delete GraphicsEngine::m_engine;
+}
+
+GraphicsEngine * GraphicsEngine::get()
+{
+	return m_engine;
 }

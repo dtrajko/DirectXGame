@@ -1,11 +1,19 @@
+// Copyright (c) 2019 - 2020 PardCode
+// All rights reserved.
+//
+// This file is part of CPP-3D-Game-Tutorial-Series Project, accessible from https://github.com/PardCode/CPP-3D-Game-Tutorial-Series
+// You can redistribute it and/or modify it under the terms of the GNU
+// General Public License 
+//
+// This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+// WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
 #include "ConstantBuffer.h"
 #include "RenderSystem.h"
 #include "DeviceContext.h"
-
 #include <exception>
 
-
-ConstantBuffer::ConstantBuffer(void* buffer, UINT size_buffer, RenderSystem* system) : m_system(system), m_buffer(0)
+ConstantBuffer::ConstantBuffer(void * buffer, UINT size_buffer,RenderSystem * system) : m_system(system)
 {
 	D3D11_BUFFER_DESC buff_desc = {};
 	buff_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -17,19 +25,20 @@ ConstantBuffer::ConstantBuffer(void* buffer, UINT size_buffer, RenderSystem* sys
 	D3D11_SUBRESOURCE_DATA init_data = {};
 	init_data.pSysMem = buffer;
 
-	HRESULT hr = m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer);
-	if (FAILED(hr))
+	if (FAILED(m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
 	{
-		throw std::exception("ConstantBuffer initialization failed.");
+		throw std::exception("ConstantBuffer not created successfully");
 	}
 }
 
-void ConstantBuffer::update(DeviceContextPtr context, void* buffer)
+
+void ConstantBuffer::update(DeviceContextPtr context, void * buffer)
 {
 	context->m_device_context->UpdateSubresource(this->m_buffer, NULL, NULL, buffer, NULL, NULL);
 }
 
+
 ConstantBuffer::~ConstantBuffer()
 {
-	m_buffer->Release();
+	if (m_buffer)m_buffer->Release();
 }

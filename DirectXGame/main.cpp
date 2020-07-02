@@ -1,4 +1,4 @@
-// Copyright (c) 2019  PardCode.
+// Copyright (c) 2019 - 2020 PardCode
 // All rights reserved.
 //
 // This file is part of CPP-3D-Game-Tutorial-Series Project, accessible from https://github.com/PardCode/CPP-3D-Game-Tutorial-Series
@@ -8,12 +8,8 @@
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-
-#include "GraphicsEngine.h"
-#include "InputSystem.h"
 #include "AppWindow.h"
-
-#include <exception>
+#include "InputSystem.h"
 
 
 int main()
@@ -29,19 +25,17 @@ int main()
 		try
 		{
 			AppWindow app;
-			while (app.isRunning())
-			{
-				app.broadcast();
-			}
+			while (app.isRun());
 		}
 		catch (...) {
 			InputSystem::release();
 			GraphicsEngine::release();
 			return -1;
-		};
+		}
 	}
 
 	InputSystem::release();
 	GraphicsEngine::release();
+
 	return 0;
 }

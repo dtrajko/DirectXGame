@@ -1,17 +1,13 @@
 #pragma once
-
 #include "ResourceManager.h"
 
-
-class MeshManager : public ResourceManager
+class MeshManager: public ResourceManager
 {
 public:
 	MeshManager();
-	virtual ~MeshManager() override;
-
+	~MeshManager();
 	MeshPtr createMeshFromFile(const wchar_t* file_path);
-
 protected:
-	virtual Resource* createResourceFromFileConcrete(const wchar_t* file_path) override;
-
+	virtual Resource* createResourceFromFileConcrete(const wchar_t* file_path);
 };
+

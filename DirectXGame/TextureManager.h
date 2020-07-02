@@ -1,17 +1,14 @@
 #pragma once
-
 #include "ResourceManager.h"
 
 
-class TextureManager : public ResourceManager
+class TextureManager: public ResourceManager
 {
 public:
 	TextureManager();
-	virtual ~TextureManager() override;
-
+	~TextureManager();
 	TexturePtr createTextureFromFile(const wchar_t* file_path);
-
 protected:
-	virtual Resource* createResourceFromFileConcrete(const wchar_t* file_path) override;
-
+	virtual Resource* createResourceFromFileConcrete(const wchar_t* file_path);
 };
+

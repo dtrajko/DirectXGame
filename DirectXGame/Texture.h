@@ -1,21 +1,16 @@
 #pragma once
-
+#include "Resource.h"
 #include <d3d11.h>
 
-#include "Resource.h"
-
-
-class Texture : public Resource
+class Texture: public Resource
 {
 public:
-	Texture();
 	Texture(const wchar_t* full_path);
-	virtual ~Texture() override;
-
+	~Texture();
 private:
-	ID3D11Resource* m_texture = nullptr;
-	ID3D11ShaderResourceView* m_shader_res_view = nullptr;
-
+	ID3D11Resource * m_texture = nullptr;
+	ID3D11ShaderResourceView *m_shader_res_view = nullptr;
+private:
 	friend class DeviceContext;
-
 };
+

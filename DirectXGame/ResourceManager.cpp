@@ -11,11 +11,12 @@ ResourceManager::ResourceManager()
 {
 }
 
+
 ResourceManager::~ResourceManager()
 {
 }
 
-ResourcePtr ResourceManager::createResourceFromFile(const wchar_t* file_path)
+ResourcePtr ResourceManager::createResourceFromFile(const wchar_t * file_path)
 {
 	std::wstring full_path = std::experimental::filesystem::absolute(file_path);
 
@@ -35,3 +36,4 @@ ResourcePtr ResourceManager::createResourceFromFile(const wchar_t* file_path)
 
 	return nullptr;
 }
+
