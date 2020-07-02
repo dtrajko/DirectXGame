@@ -24,10 +24,10 @@ public:
 	void setPixelShader(const PixelShaderPtr& pixel_shader);
 
 	void setTexture(const VertexShaderPtr& vertex_shader, const TexturePtr& texture);
-	void setTexture(const PixelShaderPtr& vertex_shader,  const TexturePtr& texture);
+	void setTexture(const PixelShaderPtr& pixel_shader,  const TexturePtr& texture);
 
 	void setConstantBuffer(const VertexShaderPtr& vertex_shader, const ConstantBufferPtr& buffer);
-	void setConstantBuffer(const PixelShaderPtr& vertex_shader,  const ConstantBufferPtr& buffer);
+	void setConstantBuffer(const PixelShaderPtr& pixel_shader,  const ConstantBufferPtr& buffer);
 
 	~DeviceContext();
 

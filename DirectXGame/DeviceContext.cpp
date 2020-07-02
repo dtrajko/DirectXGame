@@ -82,7 +82,7 @@ void DeviceContext::setTexture(const VertexShaderPtr& vertex_shader, const Textu
 	m_device_context->VSSetShaderResources(0, 1, &texture->m_shader_res_view);
 }
 
-void DeviceContext::setTexture(const PixelShaderPtr& vertex_shader, const TexturePtr& texture)
+void DeviceContext::setTexture(const PixelShaderPtr& pixel_shader, const TexturePtr& texture)
 {
 	m_device_context->PSSetShaderResources(0, 1, &texture->m_shader_res_view);
 }
@@ -92,7 +92,7 @@ void DeviceContext::setConstantBuffer(const VertexShaderPtr& vertex_shader, cons
 	m_device_context->VSSetConstantBuffers(0, 1, &buffer->m_buffer);
 }
 
-void DeviceContext::setConstantBuffer(const PixelShaderPtr& vertex_shader, const ConstantBufferPtr& buffer)
+void DeviceContext::setConstantBuffer(const PixelShaderPtr& pixel_shader, const ConstantBufferPtr& buffer)
 {
 	m_device_context->PSSetConstantBuffers(0, 1, &buffer->m_buffer);
 }
