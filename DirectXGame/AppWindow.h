@@ -68,7 +68,7 @@ private:
 	float m_delta_scale;
 	float m_delta_rot;
 
-	float m_rot_x=0.0f;
+	float m_rot_x = 0.0f;
 	float m_rot_y = 0.0f;
 
 	float m_light_rot_y = 0.0f;
@@ -79,5 +79,5 @@ private:
 	float m_up = 0.0f;
 	Matrix4x4 m_world_cam;
 
-	float cam_speed = 0.02f;
+	float cam_speed = 0.01f;
 };
