@@ -214,5 +214,8 @@
     <FxCompile Include="VertexShader.hlsl">
       <Filter>GameEngine\GraphicsEngine</Filter>
     </FxCompile>
+    <FxCompile Include="SkyBoxShader.hlsl">
+      <Filter>GameEngine\GraphicsEngine</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

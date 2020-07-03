@@ -46,5 +46,5 @@ float4 psmain(PS_INPUT input) : SV_TARGET
 	// Final light
 	float3 final_light = ambient_light + diffuse_light + specular_light;
 
-	return float4(final_light, 1.0);
+	return float4(final_light, 1.0) * texture_sample;
 }
