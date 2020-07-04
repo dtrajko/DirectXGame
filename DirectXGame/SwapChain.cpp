@@ -74,6 +74,7 @@ void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 	}
 
 	hr = device->CreateRenderTargetView(buffer, NULL, &m_rtv);
+	buffer->Release();
 
 	if (FAILED(hr))
 	{

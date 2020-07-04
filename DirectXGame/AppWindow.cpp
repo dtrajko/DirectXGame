@@ -86,9 +86,9 @@ void AppWindow::updateCamera()
 	world_cam *= temp;
 
 	Vector3D new_pos = m_world_cam.getTranslation() +
-		world_cam.getXDirection() * (m_right * cam_speed) +
-		world_cam.getYDirection() * (m_up * cam_speed) +
-		world_cam.getZDirection() * (m_forward * cam_speed);
+		world_cam.getXDirection() * (m_right   * m_cam_speed) +
+		world_cam.getYDirection() * (m_up      * m_cam_speed) +
+		world_cam.getZDirection() * (m_forward * m_cam_speed);
 
 	world_cam.setTranslation(new_pos);
 
@@ -280,8 +280,8 @@ void AppWindow::onMouseMove(const Point & mouse_pos)
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	m_rot_x += (mouse_pos.m_y- (height / 2.0f))*m_delta_time*0.1f;
-	m_rot_y += (mouse_pos.m_x - (width / 2.0f))*m_delta_time*0.1f;
+	m_rot_x += (mouse_pos.m_y - (height / 2.0f)) * m_delta_time * 0.1f;
+	m_rot_y += (mouse_pos.m_x - (width / 2.0f)) * m_delta_time * 0.1f;
 
 	InputSystem::get()->setCursorPosition(Point((int)(width / 2.0f), (int)(height / 2.0f)));
 }

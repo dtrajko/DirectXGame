@@ -91,7 +91,7 @@ private:
 	Matrix4x4 m_view_cam;
 	Matrix4x4 m_proj_cam;
 
-	float cam_speed = 0.05f;
+	float m_cam_speed = 0.05f;
 
 	bool m_play_state = false;
 	bool m_fullscreen_state = false;
