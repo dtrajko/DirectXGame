@@ -19,41 +19,49 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch (msg)
 	{
-	case WM_CREATE:
-	{
-		// Event fired when the window is created
-		// window->setHWND(hwnd);
-		// window->onCreate();
-		break;
-	}
-	case WM_SETFOCUS:
-	{
-		// Event fired when the window is in focus
-		Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		if (window)
-			window->onFocus();
-		break;
-	}
-	case WM_KILLFOCUS:
-	{
-		// Event fired when the window is in focus
-		Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		if (window)
-			window->onKillFocus();
-		break;
-	}
-	case WM_DESTROY:
-	{
-		// Event fired when the window is destroyed
-		Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		window->onDestroy();
-		::PostQuitMessage(0);
-		break;
-	}
-	default:
-	{
-		return ::DefWindowProc(hwnd, msg, wparam, lparam);
-	}
+		case WM_CREATE:
+		{
+			// Event fired when the window is created
+			// window->setHWND(hwnd);
+			// window->onCreate();
+			break;
+		}
+		case WM_SIZE:
+		{
+			// Event fired when the window is resized
+			Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			if (window)
+				window->onSize();
+			break;
+		}
+		case WM_SETFOCUS:
+		{
+			// Event fired when the window is in focus
+			Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			if (window)
+				window->onFocus();
+			break;
+		}
+		case WM_KILLFOCUS:
+		{
+			// Event fired when the window is in focus
+			Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			if (window)
+				window->onKillFocus();
+			break;
+		}
+		case WM_DESTROY:
+		{
+			// Event fired when the window is destroyed
+			Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+			window->onDestroy();
+			::PostQuitMessage(0);
+			break;
+		}
+		default:
+		{
+			return ::DefWindowProc(hwnd, msg, wparam, lparam);
+		}
 	}
 
 	return NULL;
@@ -83,12 +91,7 @@ Window::Window()
 		throw std::exception("Window not created successfully.");
 	}
 
-	// if (!window)
-	// {
-	// 	window = this;
-	// }
-
-	m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, className, "DirectX Application", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1600, 900,
+	m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, className, "DirectX Application", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720,
 		NULL, NULL, NULL, NULL);
 
 	if (!m_hwnd)
@@ -145,9 +148,19 @@ bool Window::isRunning()
 
 RECT Window::getClientWindowRect()
 {
-	RECT rect;
-	::GetClientRect(this->m_hwnd, &rect);
-	return rect;
+	RECT rc;
+	::GetClientRect(this->m_hwnd, &rc);
+	return rc;
+}
+
+RECT Window::getSizeScreen()
+{
+	RECT rc;
+
+	rc.right = ::GetSystemMetrics(SM_CXSCREEN);
+	rc.bottom = ::GetSystemMetrics(SM_CYSCREEN);
+
+	return rc;
 }
 
 void Window::onCreate()
@@ -173,6 +186,10 @@ void Window::onFocus()
 void Window::onKillFocus()
 {
 
+}
+
+void Window::onSize()
+{
 }
 
 Window::~Window()

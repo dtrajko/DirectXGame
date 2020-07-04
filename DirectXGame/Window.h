@@ -25,6 +25,7 @@ public:
 	bool release();
 	bool isRunning();
 	RECT getClientWindowRect();
+	RECT getSizeScreen();
 
 	// Events
 	virtual void onCreate();
@@ -32,7 +33,7 @@ public:
 	virtual void onDestroy();
 	virtual void onFocus();
 	virtual void onKillFocus();
-
+	virtual void onSize();
 
 protected:
 	HWND m_hwnd;
