@@ -15,6 +15,7 @@
 #include "RenderSystem.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
+#include "Material.h"
 
 #include <d3d11.h>
 
@@ -32,6 +33,10 @@ public:
 	RenderSystem* getRenderSystem();
 	TextureManager* getTextureManager();
 	MeshManager* getMeshManager();
+
+	MaterialPtr createMaterial(const wchar_t* vertex_shader_path, const wchar_t* pixel_shader_path);
+	void setMaterial(const MaterialPtr& material);
+
 	void getVertexMeshLayoutShaderByteCodeAndSize(void** byte_code, size_t* size);
 	static GraphicsEngine* get();
 	static void create();

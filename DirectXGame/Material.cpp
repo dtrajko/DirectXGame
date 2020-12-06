@@ -37,3 +37,25 @@ void Material::removeTexture(unsigned int index)
 
 	m_vec_textures.erase(m_vec_textures.begin() + index);
 }
+
+void Material::setData(void* data, unsigned int size)
+{
+	if (!m_constant_buffer)
+	{
+		m_constant_buffer = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(data, size);
+	}
+	else
+	{
+		m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), data);
+	}
+}
+
+void Material::setCullMode(CULL_MODE mode)
+{
+	m_cull_mode = mode;
+}
+
+CULL_MODE Material::getCullMode()
+{
+	return m_cull_mode;
+}

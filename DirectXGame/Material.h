@@ -2,9 +2,18 @@
 
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "ConstantBuffer.h"
 
 #include <vector>
 
+
+enum CULL_MODE
+{
+	CULL_MODE_FRONT = 0,
+	CULL_MODE_BACK
+};
+
+class GraphicsEngine;
 
 class Material
 {
@@ -15,9 +24,18 @@ public:
 	void addTexture(const TexturePtr& texture);
 	void removeTexture(unsigned int index);
 
+	void setData(void* data, unsigned int size);
+
+	void setCullMode(CULL_MODE mode);
+	CULL_MODE getCullMode();
+
 private:
 	VertexShaderPtr m_vertex_shader;
 	PixelShaderPtr m_pixel_shader;
+	ConstantBufferPtr m_constant_buffer;
 	std::vector<TexturePtr> m_vec_textures;
+	CULL_MODE m_cull_mode = CULL_MODE_BACK;
+
+	friend class GraphicsEngine;
 
 };

@@ -34,7 +34,7 @@ Texture::Texture(const wchar_t* full_path) : Resource(full_path)
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
 		sampler_desc.MinLOD = 0;
-		sampler_desc.MaxLOD = (UINT)image_data.GetMetadata().mipLevels;
+		sampler_desc.MaxLOD = (FLOAT)image_data.GetMetadata().mipLevels;
 
 		res = GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateSamplerState(&sampler_desc, &m_sampler_state);
 		if (FAILED(res)) throw std::exception("Texture SamplerState not created successfully.");
