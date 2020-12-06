@@ -64,6 +64,9 @@
     <Filter Include="App\Shaders\PointLightShader">
       <UniqueIdentifier>{327ed012-28fe-43a3-a4d8-69faeb669e38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\Material">
+      <UniqueIdentifier>{70d63163-0906-4721-a9bc-5d5a826da085}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -125,6 +128,9 @@
     </ClCompile>
     <ClCompile Include="MeshManager.cpp">
       <Filter>GameEngine\GraphicsEngine\ResourceManager\MeshManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>GameEngine\GraphicsEngine\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="VertexMesh.h">
       <Filter>GameEngine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>GameEngine\GraphicsEngine\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
