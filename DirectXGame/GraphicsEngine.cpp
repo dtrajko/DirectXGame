@@ -12,6 +12,7 @@
 #include "GraphicsEngine.h"
 
 #include "DeviceContext.h"
+#include "Material.h"
 
 #include <d3dcompiler.h>
 #include <exception>
@@ -95,6 +96,8 @@ MaterialPtr GraphicsEngine::createMaterial(const wchar_t* vertex_shader_path, co
 
 void GraphicsEngine::setMaterial(const MaterialPtr& material)
 {
+	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(material->m_cull_mode == CULL_MODE_FRONT ? true : false);
+
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(material->m_vertex_shader, material->m_constant_buffer);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(material->m_pixel_shader, material->m_constant_buffer);
 

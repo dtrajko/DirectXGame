@@ -54,8 +54,7 @@ public:
 	void updateCamera();
 	void updateModel();
 	void updateSkyBox();
-	void drawMesh(const MeshPtr& mesh, const VertexShaderPtr& vs, const PixelShaderPtr& ps, const ConstantBufferPtr& cb,
-		const TexturePtr* list_tex, unsigned int num_textures);
+	void drawMesh(const MeshPtr& mesh, const MaterialPtr& material);
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -70,6 +69,9 @@ private:
 
 	MeshPtr m_mesh;
 	MeshPtr m_sky_mesh;
+
+	MaterialPtr m_mat;
+	MaterialPtr m_sky_mat;
 
 private:
 	long m_old_delta;

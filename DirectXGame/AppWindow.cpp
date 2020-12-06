@@ -55,17 +55,12 @@ void AppWindow::render()
 	// Render model
 	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(false);
 
-	TexturePtr list_tex[1];
-	list_tex[0] = m_wall_tex;
-
-	drawMesh(m_mesh, m_vs, m_ps, m_cb, list_tex, 1);
+	drawMesh(m_mesh, m_mat);
 
 	// Render Skybox/sphere
 	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(true);
 
-	list_tex[0] = m_sky_tex;
-
-	drawMesh(m_sky_mesh, m_vs, m_sky_ps, m_sky_cb, list_tex, 1);
+	drawMesh(m_sky_mesh, m_sky_mat);
 
 	m_swap_chain->present(true);
 
@@ -138,7 +133,7 @@ void AppWindow::updateModel()
 	cc.m_light_direction = m_light_rot_matrix.getZDirection();
 	cc.m_time = m_time;
 
-	m_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
+	m_mat->setData(&cc, sizeof(constant));
 }
 
 void AppWindow::updateSkyBox()
@@ -151,20 +146,12 @@ void AppWindow::updateSkyBox()
 	cc.m_view = m_view_cam;
 	cc.m_proj = m_proj_cam;
 
-	m_sky_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
+	m_sky_mat->setData(&cc, sizeof(constant));
 }
 
-void AppWindow::drawMesh(const MeshPtr& mesh, const VertexShaderPtr& vs, const PixelShaderPtr& ps, const ConstantBufferPtr& cb,
-	const TexturePtr* list_tex, unsigned int num_textures)
+void AppWindow::drawMesh(const MeshPtr& mesh, const MaterialPtr& material)
 {
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(vs, cb);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(ps, cb);
-
-	// SET DEFAULT SHADER IN THE GRAPHICS PIPELINE TO BE ABLE TO DRAW
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(vs);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(ps);
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(ps, list_tex, num_textures);
+	GraphicsEngine::get()->setMaterial(material);
 
 	// SET THE VERTICES OF THE TRIANGLE TO DRAW
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
@@ -197,26 +184,13 @@ void AppWindow::onCreate()
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	m_world_cam.setTranslation(Vector3D(0, 0, -2));
+	m_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"PointLightPixelShader.hlsl");
+	m_mat->addTexture(m_wall_tex);
+	m_mat->setCullMode(CULL_MODE_BACK);
 
-	void* shader_byte_code = nullptr;
-	size_t size_shader = 0;
-	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"PointLightVertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
-	m_vs=GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
-	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
-
-	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"PointLightPixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
-	m_ps = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
-	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
-
-	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"SkyBoxShader.hlsl", "psmain", &shader_byte_code, &size_shader);
-	m_sky_ps = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
-	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
-
-	constant cc;
-
-	m_cb = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(constant));
-	m_sky_cb = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(constant));
+	m_sky_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"SkyBoxShader.hlsl");
+	m_sky_mat->addTexture(m_sky_tex);
+	m_sky_mat->setCullMode(CULL_MODE_FRONT);
 
 	m_world_cam.setTranslation(Vector3D(0.0f, 1.0f, -2.0f));
 }
