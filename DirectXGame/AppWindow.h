@@ -65,12 +65,9 @@ private:
 	ConstantBufferPtr m_cb;
 	ConstantBufferPtr m_sky_cb;
 
-	TexturePtr m_earth_color_tex;
-	TexturePtr m_earth_spec_tex;
-	TexturePtr m_earth_night_tex;
-	TexturePtr m_clouds_tex;
-
+	TexturePtr m_wall_tex;
 	TexturePtr m_sky_tex;
+
 	MeshPtr m_mesh;
 	MeshPtr m_sky_mesh;
 
@@ -98,6 +95,7 @@ private:
 	Matrix4x4 m_proj_cam;
 
 	float m_time = 0.0f;
+	float m_light_radius = 4.0f;
 
 	float m_cam_speed = 0.05f;
 
