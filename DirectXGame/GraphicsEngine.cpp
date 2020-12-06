@@ -94,6 +94,20 @@ MaterialPtr GraphicsEngine::createMaterial(const wchar_t* vertex_shader_path, co
 	return mat;
 }
 
+MaterialPtr GraphicsEngine::createMaterial(const MaterialPtr& material)
+{
+	MaterialPtr mat = nullptr;
+	try
+	{
+		mat = std::make_shared<Material>(material);
+	}
+	catch (const std::exception&)
+	{
+		throw std::exception("Material initialization failed.");
+	}
+	return mat;
+}
+
 void GraphicsEngine::setMaterial(const MaterialPtr& material)
 {
 	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(material->m_cull_mode == CULL_MODE_FRONT ? true : false);

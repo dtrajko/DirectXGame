@@ -25,19 +25,19 @@ cbuffer constant: register(b0)
 
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
-	float4 tex_color = TextureColor.Sample(TextureColorSampler, (1.0 - input.texcoord) * 2.0);
+	float4 tex_color = TextureColor.Sample(TextureColorSampler, (1.0 - input.texcoord));
 
 	// Ambient light
-	float ka = 0.1;
-	float3 ia = float3(0.09, 0.082, 0.082);
+	float ka = 0.6;
+	float3 ia = float3(1.0, 1.0, 1.0);
 	ia *= (tex_color.rgb);
 
 	float3 ambient_light = ka * ia;
 
 	// Diffuse light
 	float kd = 0.7;
-	float3 light_dir = normalize(m_light_position.xyz - input.world_pos);
-	float distance_light_object = length(m_light_position.xyz - input.world_pos);
+	float3 light_dir = normalize(m_light_position.xyz - input.world_pos.xyz);
+	float distance_light_object = length(m_light_position.xyz - input.world_pos.xyz);
 
 	float fade_area = max(0, distance_light_object - m_light_radius);
 
@@ -55,7 +55,7 @@ float4 psmain(PS_INPUT input) : SV_TARGET
 
 	// Specular light
 	float ks = 1.0;
-	float3 direction_to_camera = normalize(input.world_pos - m_camera_position.xyz);
+	float3 direction_to_camera = normalize(input.world_pos.xyz - m_camera_position.xyz);
 	float is = float3(1.0, 1.0, 1.0);
 	float3 reflected_light = reflect(light_dir, input.normal);
 	float shininess = 30.0;

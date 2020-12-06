@@ -19,6 +19,7 @@ class Material
 {
 public:
 	Material(const wchar_t* vertex_shader_path, const wchar_t* pixel_shader_path);
+	Material(const MaterialPtr& material);
 	~Material();
 
 	void addTexture(const TexturePtr& texture);
