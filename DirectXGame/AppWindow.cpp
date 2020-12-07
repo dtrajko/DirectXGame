@@ -71,10 +71,31 @@ void AppWindow::render()
 	//	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_mat);
 	//	drawMesh(m_plane_mesh, m_mat);
 
+	// Render Terrain
 	m_list_materials.clear();
-	m_list_materials.push_back(m_sky_mat);
+	m_list_materials.push_back(m_terrain_mat);
+	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_list_materials);
+	drawMesh(m_terrain_mesh, m_list_materials);
+
+	// Render House
+	m_list_materials.clear();
+	m_list_materials.push_back(m_barrel_mat);
+	m_list_materials.push_back(m_brick_mat);
+	m_list_materials.push_back(m_windows_mat);
+	m_list_materials.push_back(m_wood_mat);
+
+	for (int i = -1; i <= 1; i++)
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			updateModel(Vector3D(10.0f * i, 0.0f, 10.0f * j), m_list_materials);
+			drawMesh(m_house_mesh, m_list_materials);
+		}
+	}
 
 	// Render Skybox/sphere
+	m_list_materials.clear();
+	m_list_materials.push_back(m_sky_mat);
 	drawMesh(m_sky_mesh, m_list_materials);
 
 	m_swap_chain->present(true);
@@ -186,7 +207,8 @@ void AppWindow::updateLight()
 {
 	m_light_rot_y += 1.57f * m_delta_time;
 	float dist_from_origin = 3.0f;
-	m_light_position = Vector4D(cos(m_light_rot_y) * dist_from_origin, 1.1f, sin(m_light_rot_y) * dist_from_origin, 1.0f);
+	// m_light_position = Vector4D(cos(m_light_rot_y) * dist_from_origin, 1.1f, sin(m_light_rot_y) * dist_from_origin, 1.0f);
+	m_light_position = Vector4D(180.0f, 140.0f, 70.0f, 1.0f);
 }
 
 AppWindow::~AppWindow()
@@ -201,30 +223,61 @@ void AppWindow::onCreate()
 	m_play_state = true;
 	InputSystem::get()->showCursor(false);
 
-	// m_wall_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/wall.jpg");
+	// m_wall_tex        = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/wall.jpg");
 	// m_earth_color_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/earth_color.jpg");
-	// m_bricks_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick.png");
+	// m_bricks_tex      = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick.png");
 
-	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/sky.jpg");
+	m_sky_tex     = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/sky.jpg");
 
-	// m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
-	// m_torus_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/torus.obj");
+	m_sand_tex    = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/sand.jpg");
+
+	m_barrel_tex  = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/barrel.jpg");
+	m_brick_tex   = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_brick.jpg");
+	m_windows_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_windows.jpg");
+	m_wood_tex    = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_wood.jpg");
+
+	// m_mesh         = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
+	// m_torus_mesh   = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/torus.obj");
 	// m_suzanne_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/suzanne.obj");
-	// m_plane_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/plane.obj");
+	// m_plane_mesh   = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/plane.obj");
 
 	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
+
+	m_terrain_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/terrain.obj");
+
+	m_house_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/house.obj");
 
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	// m_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"PointLightPixelShader.hlsl");
-	// m_mat->addTexture(m_wall_tex);
-	// m_mat->setCullMode(CULL_MODE_BACK);
-	// 
+	m_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"PointLightPixelShader.hlsl");
+	m_mat->addTexture(m_wall_tex);
+	m_mat->setCullMode(CULL_MODE_BACK);
+
+	m_terrain_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	m_terrain_mat->addTexture(m_sand_tex);
+	m_terrain_mat->setCullMode(CULL_MODE_BACK);
+
+	m_barrel_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	m_barrel_mat->addTexture(m_barrel_tex);
+	m_barrel_mat->setCullMode(CULL_MODE_BACK);
+
+	m_brick_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	m_brick_mat->addTexture(m_brick_tex);
+	m_brick_mat->setCullMode(CULL_MODE_BACK);
+
+	m_windows_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	m_windows_mat->addTexture(m_windows_tex);
+	m_windows_mat->setCullMode(CULL_MODE_BACK);
+
+	m_wood_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	m_wood_mat->addTexture(m_wood_tex);
+	m_wood_mat->setCullMode(CULL_MODE_BACK);
+
 	// m_earth_mat = GraphicsEngine::get()->createMaterial(m_mat);
 	// m_earth_mat->addTexture(m_earth_color_tex);
 	// m_earth_mat->setCullMode(CULL_MODE_BACK);
-	// 
+
 	// m_bricks_mat = GraphicsEngine::get()->createMaterial(m_mat);
 	// m_bricks_mat->addTexture(m_bricks_tex);
 	// m_bricks_mat->setCullMode(CULL_MODE_BACK);

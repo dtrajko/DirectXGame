@@ -10,7 +10,8 @@
 enum CULL_MODE
 {
 	CULL_MODE_FRONT = 0,
-	CULL_MODE_BACK
+	CULL_MODE_BACK,
+	CULL_MODE_BOTH
 };
 
 class GraphicsEngine;
