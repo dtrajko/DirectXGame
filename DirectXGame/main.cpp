@@ -11,7 +11,7 @@
 
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
-#include "AppWindow.h"
+#include "SpaceShooterGame.h"
 
 #include <exception>
 
@@ -28,7 +28,7 @@ int main()
 	{
 		try
 		{
-			AppWindow app;
+			SpaceShooterGame app;
 			while (app.isRunning())
 			{
 				app.broadcast();

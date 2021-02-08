@@ -55,24 +55,27 @@
     <Filter Include="GameEngine\GraphicsEngine\ResourceManager\MeshManager">
       <UniqueIdentifier>{9c81128c-cb9b-4a9c-85c4-b4b3d0d64296}</UniqueIdentifier>
     </Filter>
-    <Filter Include="App\Shaders">
-      <UniqueIdentifier>{add779bf-2db4-4b34-a0f6-2b4d2eb7aefe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="App\Shaders\EarthShader">
-      <UniqueIdentifier>{9724c1b9-457d-46d4-960c-da2ca22f8ef6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="App\Shaders\PointLightShader">
-      <UniqueIdentifier>{327ed012-28fe-43a3-a4d8-69faeb669e38}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameEngine\GraphicsEngine\Material">
       <UniqueIdentifier>{70d63163-0906-4721-a9bc-5d5a826da085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\OldDemo">
+      <UniqueIdentifier>{bfaad807-e7e0-4d14-8bc3-5f4c31dba0fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\OldDemo\Shaders">
+      <UniqueIdentifier>{add779bf-2db4-4b34-a0f6-2b4d2eb7aefe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\OldDemo\Shaders\EarthShader">
+      <UniqueIdentifier>{9724c1b9-457d-46d4-960c-da2ca22f8ef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\OldDemo\Shaders\PointLightShader">
+      <UniqueIdentifier>{327ed012-28fe-43a3-a4d8-69faeb669e38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\SpaceShooterGame">
+      <UniqueIdentifier>{2c8ec726-f910-4e4e-b538-916fbb023a64}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
-    <ClCompile Include="AppWindow.cpp">
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
@@ -132,11 +135,14 @@
     <ClCompile Include="Material.cpp">
       <Filter>GameEngine\GraphicsEngine\Material</Filter>
     </ClCompile>
+    <ClCompile Include="AppWindow.cpp">
+      <Filter>App\OldDemo</Filter>
+    </ClCompile>
+    <ClCompile Include="SpaceShooterGame.cpp">
+      <Filter>App\SpaceShooterGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppWindow.h">
-      <Filter>App</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>GameEngine\WindowingSystem</Filter>
     </ClInclude>
@@ -218,28 +224,34 @@
     <ClInclude Include="Material.h">
       <Filter>GameEngine\GraphicsEngine\Material</Filter>
     </ClInclude>
+    <ClInclude Include="AppWindow.h">
+      <Filter>App\OldDemo</Filter>
+    </ClInclude>
+    <ClInclude Include="SpaceShooterGame.h">
+      <Filter>App\SpaceShooterGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader.fx">
-      <Filter>App\Shaders</Filter>
+      <Filter>App\OldDemo\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="SkyBoxShader.hlsl">
-      <Filter>App\Shaders</Filter>
+      <Filter>App\OldDemo\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VertexMeshLayoutShader.hlsl">
-      <Filter>App\Shaders</Filter>
+      <Filter>App\OldDemo\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
-      <Filter>App\Shaders\EarthShader</Filter>
+      <Filter>App\OldDemo\Shaders\EarthShader</Filter>
     </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
-      <Filter>App\Shaders\EarthShader</Filter>
+      <Filter>App\OldDemo\Shaders\EarthShader</Filter>
     </FxCompile>
     <FxCompile Include="PointLightPixelShader.hlsl">
-      <Filter>App\Shaders\PointLightShader</Filter>
+      <Filter>App\OldDemo\Shaders\PointLightShader</Filter>
     </FxCompile>
     <FxCompile Include="PointLightVertexShader.hlsl">
-      <Filter>App\Shaders\PointLightShader</Filter>
+      <Filter>App\OldDemo\Shaders\PointLightShader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
