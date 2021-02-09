@@ -77,18 +77,55 @@ void SpaceShooterGame::updateCamera()
 	Matrix4x4 world_cam, temp;
 	world_cam.setIdentity();
 
+	m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+	m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+
 	temp.setIdentity();
-	temp.setRotationX(m_rot_x);
+	temp.setRotationX(m_cam_rot.m_x);
 	world_cam *= temp;
 
 	temp.setIdentity();
-	temp.setRotationY(m_rot_y);
+	temp.setRotationY(m_cam_rot.m_y);
 	world_cam *= temp;
 
 	Vector3D new_pos = m_world_cam.getTranslation() +
 		world_cam.getXDirection() * (m_rightward * m_cam_speed) +
 		world_cam.getYDirection() * (m_up * m_cam_speed) +
 		world_cam.getZDirection() * (m_forward * m_cam_speed);
+
+	world_cam.setTranslation(new_pos);
+
+	m_world_cam = world_cam;
+
+	world_cam.inverse();
+
+	m_view_cam = world_cam;
+
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+
+	m_proj_cam.setPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
+}
+
+void SpaceShooterGame::updateThirdPersonCamera()
+{
+	Matrix4x4 world_cam, temp;
+	world_cam.setIdentity();
+
+	m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+	m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+
+	temp.setIdentity();
+	temp.setRotationX(m_cam_rot.m_x);
+	world_cam *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(m_cam_rot.m_y);
+	world_cam *= temp;
+
+	m_cam_pos = m_spaceship_pos;
+
+	Vector3D new_pos = m_cam_pos + world_cam.getZDirection() * (-m_cam_distance);
 
 	world_cam.setTranslation(new_pos);
 
@@ -303,8 +340,8 @@ void SpaceShooterGame::onMouseMove(const Point& mouse_pos)
 	int width = (win_size.right - win_size.left);
 	int height = (win_size.bottom - win_size.top);
 
-	m_rot_x += (mouse_pos.m_y - (win_size.top + (height / 2.0f))) * m_delta_time * 0.1f;
-	m_rot_y += (mouse_pos.m_x - (win_size.left + (width / 2.0f))) * m_delta_time * 0.1f;
+	m_delta_mouse_x = (mouse_pos.m_x - (win_size.left + (width / 2.0f)));
+	m_delta_mouse_y = (mouse_pos.m_y - (win_size.top + (height / 2.0f)));
 
 	InputSystem::get()->setCursorPosition(Point(win_size.left + (int)(width / 2.0f), win_size.top + (int)(height / 2.0f)));
 }

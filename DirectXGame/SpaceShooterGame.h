@@ -53,6 +53,7 @@ public:
 	void render();
 	void update();
 	void updateCamera();
+	void updateThirdPersonCamera();
 	void updateModel(Vector3D position, const std::vector<MaterialPtr>& list_materials);
 	void updateSkyBox();
 	void updateLight();
@@ -81,10 +82,14 @@ private:
 	long m_new_delta;
 	float m_delta_time;
 
-	float m_rot_x = 0.0f;
-	float m_rot_y = 0.0f;
+	float m_cam_distance = 14.0f;
+	Vector3D m_cam_rot;
+	Vector3D m_cam_pos;
 
-	float m_light_rot_y = 0.0f;
+	Vector3D m_spaceship_pos;
+
+	float m_delta_mouse_x = 0.0f;
+	float m_delta_mouse_y = 0.0f;
 
 	float m_forward = 0.0f;
 	float m_rightward = 0.0f;
