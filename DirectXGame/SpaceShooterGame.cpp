@@ -42,13 +42,13 @@ void SpaceShooterGame::render()
 	// Render Spaceship
 	m_list_materials.clear();
 	m_list_materials.push_back(m_spaceship_mat);
-	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_list_materials);
+	updateModel(m_spaceship_pos, m_spaceship_rot, Vector3D(1.0f, 1.0f, 1.0f), m_list_materials);
 	drawMesh(m_spaceship_mesh, m_list_materials);
 
 	// Render Asteroid
 	m_list_materials.clear();
 	m_list_materials.push_back(m_asteroid_mat);
-	updateModel(Vector3D(0.0f, 0.0f, 20.0f), m_list_materials);
+	updateModel(Vector3D(0.0f, 0.0f, 20.0f), Vector3D(0.0f, 0.0f, 0.0f), Vector3D(1.0f, 1.0f, 1.0f), m_list_materials);
 	drawMesh(m_asteroid_mesh, m_list_materials);
 
 	// Render Skybox/sphere
@@ -67,9 +67,10 @@ void SpaceShooterGame::render()
 
 void SpaceShooterGame::update()
 {
-	updateThirdPersonCamera();
 	updateLight();
 	updateSkyBox();
+	updateSpaceship();
+	updateThirdPersonCamera();
 }
 
 void SpaceShooterGame::updateCamera()
@@ -77,8 +78,10 @@ void SpaceShooterGame::updateCamera()
 	Matrix4x4 world_cam, temp;
 	world_cam.setIdentity();
 
-	m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
-	m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+	if (std::abs(m_delta_mouse_x) > 1.0f && std::abs(m_delta_mouse_y) > 1.0f) {
+		m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+		m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+	}
 
 	temp.setIdentity();
 	temp.setRotationX(m_cam_rot.m_x);
@@ -132,6 +135,7 @@ void SpaceShooterGame::updateThirdPersonCamera()
 	m_cam_pos = m_spaceship_pos;
 
 	Vector3D new_pos = m_cam_pos + world_cam.getZDirection() * (-m_cam_distance);
+	new_pos = new_pos + world_cam.getYDirection() * 5.0f;
 
 	world_cam.setTranslation(new_pos);
 
@@ -147,12 +151,33 @@ void SpaceShooterGame::updateThirdPersonCamera()
 	m_proj_cam.setPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
 }
 
-void SpaceShooterGame::updateModel(Vector3D position, const std::vector<MaterialPtr>& list_materials)
+void SpaceShooterGame::updateModel(Vector3D position, Vector3D rotation, Vector3D scale, const std::vector<MaterialPtr>& list_materials)
 {
 	constant cc;
 
+	Matrix4x4 temp;
 	cc.m_world.setIdentity();
-	cc.m_world.setTranslation(position);
+
+	temp.setIdentity();
+	temp.setScale(scale);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationX(rotation.m_x);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(rotation.m_y);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationZ(rotation.m_z);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setTranslation(position);
+	cc.m_world *= temp;
+
 	cc.m_view = m_view_cam;
 	cc.m_proj = m_proj_cam;
 	cc.m_camera_position = m_world_cam.getTranslation();
@@ -212,6 +237,34 @@ void SpaceShooterGame::updateLight()
 	temp.setIdentity();
 	temp.setRotationY(0.707f);
 	m_light_rot_matrix *= temp;
+}
+
+void SpaceShooterGame::updateSpaceship()
+{
+	Matrix4x4 world_cam, temp;
+	world_cam.setIdentity();
+
+	m_spaceship_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+	m_spaceship_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+
+	if (m_spaceship_rot.m_x >= 1.57f) {
+		m_spaceship_rot.m_x = 1.57f;
+	}
+	else if (m_spaceship_rot.m_x <= -1.57f) {
+		m_spaceship_rot.m_x = -1.57f;
+	}
+
+	temp.setIdentity();
+	temp.setRotationX(m_spaceship_rot.m_x);
+	world_cam *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(m_spaceship_rot.m_y);
+	world_cam *= temp;
+
+	m_spaceship_pos = m_spaceship_pos + world_cam.getZDirection() * m_forward * m_spaceship_speed * m_delta_time;
+	m_spaceship_pos = m_spaceship_pos + world_cam.getXDirection() * m_rightward * m_spaceship_speed * m_delta_time;
+	m_spaceship_pos = m_spaceship_pos + world_cam.getYDirection() * m_up * m_spaceship_speed * m_delta_time;
 }
 
 SpaceShooterGame::~SpaceShooterGame()

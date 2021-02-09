@@ -54,9 +54,10 @@ public:
 	void update();
 	void updateCamera();
 	void updateThirdPersonCamera();
-	void updateModel(Vector3D position, const std::vector<MaterialPtr>& list_materials);
+	void updateModel(Vector3D position, Vector3D rotation, Vector3D scale, const std::vector<MaterialPtr>& list_materials);
 	void updateSkyBox();
 	void updateLight();
+	void updateSpaceship();
 
 	void drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& list_materials);
 
@@ -86,7 +87,9 @@ private:
 	Vector3D m_cam_rot;
 	Vector3D m_cam_pos;
 
+	float m_spaceship_speed = 125.0f;
 	Vector3D m_spaceship_pos;
+	Vector3D m_spaceship_rot;
 
 	float m_delta_mouse_x = 0.0f;
 	float m_delta_mouse_y = 0.0f;
