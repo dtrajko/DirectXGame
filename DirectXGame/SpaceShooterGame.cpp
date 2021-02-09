@@ -6,6 +6,7 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "Mesh.h"
+#include "MathUtils.h"
 
 #include <time.h>
 
@@ -73,10 +74,10 @@ void SpaceShooterGame::render()
 
 void SpaceShooterGame::update()
 {
-	updateLight();
-	updateSkyBox();
 	updateSpaceship();
 	updateThirdPersonCamera();
+	updateLight();
+	updateSkyBox();
 }
 
 void SpaceShooterGame::updateCamera()
@@ -140,9 +141,33 @@ void SpaceShooterGame::updateThirdPersonCamera()
 	temp.setRotationY(m_current_cam_rot.m_y);
 	world_cam *= temp;
 
+	if (m_forward) {
+		if (m_turbo_mode) {
+			if (m_forward > 0.0f) {
+				m_cam_distance = 25.0f;
+			}
+			else {
+				m_cam_distance = 5.0f;
+			}
+		}
+		else {
+			if (m_forward > 0.0f) {
+				m_cam_distance = 16.0f;
+			}
+			else {
+				m_cam_distance = 9.0f;
+			}
+		}
+	}
+	else {
+		m_cam_distance = 14.0f;
+	}
+
+	m_current_cam_distance = lerp(m_current_cam_distance, m_cam_distance, 2.0f * m_delta_time);
+
 	m_cam_pos = m_current_spaceship_pos;
 
-	Vector3D new_pos = m_cam_pos + world_cam.getZDirection() * (-m_cam_distance);
+	Vector3D new_pos = m_cam_pos + world_cam.getZDirection() * (-m_current_cam_distance);
 	new_pos = new_pos + world_cam.getYDirection() * 5.0f;
 
 	world_cam.setTranslation(new_pos);
@@ -272,6 +297,11 @@ void SpaceShooterGame::updateSpaceship()
 	temp.setRotationY(m_current_spaceship_rot.m_y);
 	world_model *= temp;
 
+	m_spaceship_speed = 125.0f;
+	if (m_turbo_mode) {
+		m_spaceship_speed = 305.0f;
+	}
+
 	m_spaceship_pos = m_spaceship_pos + world_model.getZDirection() * m_forward * m_spaceship_speed * m_delta_time;
 	m_spaceship_pos = m_spaceship_pos + world_model.getXDirection() * m_rightward * m_spaceship_speed * m_delta_time;
 	m_spaceship_pos = m_spaceship_pos + world_model.getYDirection() * m_up * m_spaceship_speed * m_delta_time;
@@ -386,6 +416,9 @@ void SpaceShooterGame::onKeyDown(int key)
 	case 'E':
 		m_up = 1.0f;
 		break;
+	case VK_SHIFT:
+		m_turbo_mode = true;
+		break;
 	}
 }
 
@@ -407,6 +440,9 @@ void SpaceShooterGame::onKeyUp(int key)
 		m_fullscreen_state = m_fullscreen_state ? false : true;
 		RECT size_screen = this->getSizeScreen();
 		m_swap_chain->setFullScreen(m_fullscreen_state, size_screen.right, size_screen.bottom);
+		break;
+	case VK_SHIFT:
+		m_turbo_mode = false;
 		break;
 	}
 }

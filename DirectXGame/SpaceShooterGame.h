@@ -83,6 +83,7 @@ private:
 	long m_new_delta;
 	float m_delta_time;
 
+	float m_current_cam_distance;
 	float m_cam_distance = 14.0f;
 	Vector3D m_current_cam_rot;
 	Vector3D m_cam_rot;
@@ -107,6 +108,7 @@ private:
 	float m_rightward = 0.0f;
 	float m_up = 0.0f;
 
+	bool m_turbo_mode = false;
 	bool cull = true;
 	Matrix4x4 m_world_cam;
 	Matrix4x4 m_view_cam;
