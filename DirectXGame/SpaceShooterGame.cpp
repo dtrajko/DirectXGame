@@ -67,7 +67,7 @@ void SpaceShooterGame::render()
 
 void SpaceShooterGame::update()
 {
-	updateCamera();
+	updateThirdPersonCamera();
 	updateLight();
 	updateSkyBox();
 }
@@ -114,6 +114,12 @@ void SpaceShooterGame::updateThirdPersonCamera()
 
 	m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
 	m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+
+	if (m_cam_rot.m_x >= 1.57f) {
+		m_cam_rot.m_x = 1.57f;
+	} else if (m_cam_rot.m_x <= -1.57f) {
+		m_cam_rot.m_x = -1.57f;
+	}
 
 	temp.setIdentity();
 	temp.setRotationX(m_cam_rot.m_x);
@@ -340,8 +346,8 @@ void SpaceShooterGame::onMouseMove(const Point& mouse_pos)
 	int width = (win_size.right - win_size.left);
 	int height = (win_size.bottom - win_size.top);
 
-	m_delta_mouse_x = (mouse_pos.m_x - (win_size.left + (width / 2.0f)));
-	m_delta_mouse_y = (mouse_pos.m_y - (win_size.top + (height / 2.0f)));
+	m_delta_mouse_x = (int)(mouse_pos.m_x - (win_size.left + (width / 2.0f)));
+	m_delta_mouse_y = (int)(mouse_pos.m_y - (win_size.top + (height / 2.0f)));
 
 	InputSystem::get()->setCursorPosition(Point(win_size.left + (int)(width / 2.0f), win_size.top + (int)(height / 2.0f)));
 }
