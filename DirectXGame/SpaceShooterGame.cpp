@@ -397,6 +397,8 @@ void SpaceShooterGame::onSize()
 {
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
+
+	update();
 	render();
 }
 
