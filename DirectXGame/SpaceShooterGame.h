@@ -66,6 +66,10 @@ private:
 	MeshPtr m_spaceship_mesh;
 	MaterialPtr m_spaceship_mat;
 
+	TexturePtr m_asteroid_tex;
+	MeshPtr m_asteroid_mesh;
+	MaterialPtr m_asteroid_mat;
+
 	TexturePtr m_sky_tex;
 	MeshPtr m_sky_mesh;
 	MaterialPtr m_sky_mat;

@@ -45,6 +45,12 @@ void SpaceShooterGame::render()
 	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_list_materials);
 	drawMesh(m_spaceship_mesh, m_list_materials);
 
+	// Render Asteroid
+	m_list_materials.clear();
+	m_list_materials.push_back(m_asteroid_mat);
+	updateModel(Vector3D(0.0f, 0.0f, 20.0f), m_list_materials);
+	drawMesh(m_asteroid_mesh, m_list_materials);
+
 	// Render Skybox/sphere
 	m_list_materials.clear();
 	m_list_materials.push_back(m_sky_mat);
@@ -186,12 +192,19 @@ void SpaceShooterGame::onCreate()
 	m_spaceship_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/spaceship.jpg");
 	m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/spaceship.obj");
 
+	m_asteroid_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/asteroid.jpg");
+	m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/asteroid.obj");
+
 	m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
 	m_base_mat->setCullMode(CULL_MODE_BACK);
 
 	m_spaceship_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
 	m_spaceship_mat->addTexture(m_spaceship_tex);
 	m_spaceship_mat->setCullMode(CULL_MODE_BACK);
+
+	m_asteroid_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_asteroid_mat->addTexture(m_asteroid_tex);
+	m_asteroid_mat->setCullMode(CULL_MODE_BACK);
 
 	m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
 	m_sky_mat->addTexture(m_sky_tex);
