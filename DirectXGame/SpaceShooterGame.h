@@ -84,15 +84,24 @@ private:
 	float m_delta_time;
 
 	float m_cam_distance = 14.0f;
+	Vector3D m_current_cam_rot;
 	Vector3D m_cam_rot;
 	Vector3D m_cam_pos;
 
 	float m_spaceship_speed = 125.0f;
+
+	Vector3D m_current_spaceship_pos;
 	Vector3D m_spaceship_pos;
+
+	Vector3D m_current_spaceship_rot;
 	Vector3D m_spaceship_rot;
 
 	float m_delta_mouse_x = 0.0f;
 	float m_delta_mouse_y = 0.0f;
+
+	Vector3D m_asteroids_pos[200];
+	Vector3D m_asteroids_rot[200];
+	Vector3D m_asteroids_scale[200];
 
 	float m_forward = 0.0f;
 	float m_rightward = 0.0f;
