@@ -21,6 +21,7 @@
 #include "PixelShader.h"
 #include "InputListener.h"
 #include "Matrix4x4.h"
+#include "Material.h"
 
 
 class SpaceShooterGame : public Window, public InputListener

@@ -153,8 +153,16 @@ void SpaceShooterGame::drawMesh(const MeshPtr& mesh, const std::vector<MaterialP
 
 void SpaceShooterGame::updateLight()
 {
+	Matrix4x4 temp;
 	m_light_rot_matrix.setIdentity();
-	m_light_rot_matrix.setRotationY(0.707f);
+
+	temp.setIdentity();
+	temp.setRotationX(-0.707f);
+	m_light_rot_matrix *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(0.707f);
+	m_light_rot_matrix *= temp;
 }
 
 SpaceShooterGame::~SpaceShooterGame()
