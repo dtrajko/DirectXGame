@@ -1,14 +1,5 @@
-Texture2D EarthColor: register(t0);
-sampler EarthColorSampler: register(s0);
-
-Texture2D EarthSpecular: register(t1);
-sampler EarthSpecularSampler: register(s1);
-
-Texture2D Clouds: register(t2);
-sampler CloudsSampler: register(s2);
-
-Texture2D EarthNight: register(t3);
-sampler EarthNightSampler: register(s3);
+Texture2D Color: register(t0);
+sampler ColorSampler: register(s0);
 
 
 struct PS_INPUT
@@ -34,35 +25,26 @@ cbuffer constant: register(b0)
 
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
-	float4 earth_color = EarthColor.Sample(EarthColorSampler, 1.0 - input.texcoord);
-	float earth_spec = EarthSpecular.Sample(EarthSpecularSampler, 1.0 - input.texcoord).r;
-	float clouds = Clouds.Sample(CloudsSampler, 1.0 - input.texcoord + float2(m_time / 100.0, 0.0)).r;
-	float4 earth_night = EarthNight.Sample(EarthNightSampler, 1.0 - input.texcoord);
+	float4 color = Color.Sample(ColorSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
 	// Ambient light
 	float ka = 1.5;
 	float3 ia = float3(0.09, 0.082, 0.082);
-	ia *= (earth_color.rgb);
+	ia *= (color.rgb);
 
 	float3 ambient_light = ka * ia;
 
 	// Diffuse light
 	float kd = 0.7;
-
-	float id_day = float3(1.0, 1.0, 1.0);
-	id_day *= (earth_color.rgb + clouds);
-
-	float id_night = float3(1.0, 1.0, 1.0);
-	id_night *= (earth_night.rgb + clouds * 0.3);
-
 	float amount_diffuse_light = dot(m_light_direction.xyz, input.normal);
 
-	float3 id = lerp(id_night, id_day, (amount_diffuse_light + 1.0) / 2.0);
+	float3 id = float3(1.0, 1.0, 1.0);
+	id *= (color.rgb);
 
-	float3 diffuse_light = kd * id;
+	float3 diffuse_light = kd * id * amount_diffuse_light;
 
 	// Specular light
-	float ks = earth_spec;
+	float ks = 0.0;
 	float is = float3(1.0, 1.0, 1.0);
 	float3 reflected_light = reflect(m_light_direction.xyz, input.normal);
 	float shininess = 30.0;
@@ -72,5 +54,5 @@ float4 psmain(PS_INPUT input) : SV_TARGET
 	// Final light
 	float3 final_light = ambient_light + diffuse_light + specular_light;
 
-	return float4(final_light, 1.0) * earth_color;
+	return float4(final_light, 1.0) * color;
 }
