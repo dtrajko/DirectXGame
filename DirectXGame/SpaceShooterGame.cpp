@@ -68,7 +68,8 @@ void SpaceShooterGame::render()
 	m_old_delta = m_new_delta;
 	m_new_delta = ::GetTickCount();
 
-	m_delta_time = (m_old_delta) ? ((m_new_delta - m_old_delta) / 1000.0f) : 0;
+	// m_delta_time = (m_old_delta) ? ((m_new_delta - m_old_delta) / 1000.0f) : 0;
+	m_delta_time = 1.0f / 60.0f;
 	m_time += m_delta_time;
 }
 
@@ -85,10 +86,8 @@ void SpaceShooterGame::updateCamera()
 	Matrix4x4 world_cam, temp;
 	world_cam.setIdentity();
 
-	if (std::abs(m_delta_mouse_x) > 1.0f && std::abs(m_delta_mouse_y) > 1.0f) {
-		m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
-		m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
-	}
+	m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+	m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
 
 	temp.setIdentity();
 	temp.setRotationX(m_cam_rot.m_x);
@@ -297,6 +296,10 @@ void SpaceShooterGame::updateSpaceship()
 	temp.setRotationY(m_current_spaceship_rot.m_y);
 	world_model *= temp;
 
+	temp.setIdentity();
+	temp.setRotationZ(m_current_spaceship_rot.m_z);
+	world_model *= temp;
+
 	m_spaceship_speed = 125.0f;
 	if (m_turbo_mode) {
 		m_spaceship_speed = 305.0f;
@@ -329,7 +332,7 @@ void SpaceShooterGame::onCreate()
 	{
 		m_asteroids_pos[i] = Vector3D(rand() % 4000 + (-2000), rand() % 4000 + (-2000), rand() % 4000 + (-2000));
 		m_asteroids_rot[i] = Vector3D((rand() % 628) / 100.0f, (rand() % 628) / 100.0f, (rand() % 628) / 100.0f);
-		float scale = rand() % 10 + (1);
+		float scale = rand() % 20 + (6);
 		m_asteroids_scale[i] = Vector3D(scale, scale, scale);
 	}
 
@@ -369,6 +372,9 @@ void SpaceShooterGame::onUpdate()
 
 	update();
 	render();
+
+	m_delta_mouse_x = 0.0f;
+	m_delta_mouse_y = 0.0f;
 }
 
 void SpaceShooterGame::onDestroy()
