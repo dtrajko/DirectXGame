@@ -39,28 +39,6 @@ void SpaceShooterGame::render()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	// Render Terrain
-	m_list_materials.clear();
-	m_list_materials.push_back(m_terrain_mat);
-	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_list_materials);
-	drawMesh(m_terrain_mesh, m_list_materials);
-
-	// Render House
-	m_list_materials.clear();
-	m_list_materials.push_back(m_barrel_mat);
-	m_list_materials.push_back(m_brick_mat);
-	m_list_materials.push_back(m_windows_mat);
-	m_list_materials.push_back(m_wood_mat);
-
-	for (int i = -1; i <= 1; i++)
-	{
-		for (int j = -1; j <= 1; j++)
-		{
-			updateModel(Vector3D(10.0f * i, 0.0f, 10.0f * j), m_list_materials);
-			drawMesh(m_house_mesh, m_list_materials);
-		}
-	}
-
 	// Render Skybox/sphere
 	m_list_materials.clear();
 	m_list_materials.push_back(m_sky_mat);
@@ -96,7 +74,7 @@ void SpaceShooterGame::updateCamera()
 	world_cam *= temp;
 
 	Vector3D new_pos = m_world_cam.getTranslation() +
-		world_cam.getXDirection() * (m_right * m_cam_speed) +
+		world_cam.getXDirection() * (m_rightward * m_cam_speed) +
 		world_cam.getYDirection() * (m_up * m_cam_speed) +
 		world_cam.getZDirection() * (m_forward * m_cam_speed);
 
@@ -125,7 +103,7 @@ void SpaceShooterGame::updateModel(Vector3D position, const std::vector<Material
 	cc.m_camera_position = m_world_cam.getTranslation();
 
 	cc.m_light_position = m_light_position;
-	cc.m_light_radius = m_light_radius;
+	cc.m_light_radius = 0.0f;
 	cc.m_light_direction = m_light_rot_matrix.getZDirection();
 	cc.m_time = m_time;
 
@@ -185,64 +163,14 @@ void SpaceShooterGame::onCreate()
 	m_play_state = true;
 	InputSystem::get()->showCursor(false);
 
-	// m_wall_tex        = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/wall.jpg");
-	// m_earth_color_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/earth_color.jpg");
-	// m_bricks_tex      = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick.png");
-
-	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/sky.jpg");
-
-	m_sand_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/sand.jpg");
-
-	m_barrel_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/barrel.jpg");
-	m_brick_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_brick.jpg");
-	m_windows_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_windows.jpg");
-	m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_wood.jpg");
-
-	// m_mesh         = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
-	// m_torus_mesh   = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/torus.obj");
-	// m_suzanne_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/suzanne.obj");
-	// m_plane_mesh   = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/plane.obj");
-
+	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/stars_map.jpg");
 	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
-
-	m_terrain_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/terrain.obj");
-
-	m_house_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/house.obj");
 
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	m_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
-	m_mat->addTexture(m_wall_tex);
-	m_mat->setCullMode(CULL_MODE_BACK);
-
-	m_terrain_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	m_terrain_mat->addTexture(m_sand_tex);
-	m_terrain_mat->setCullMode(CULL_MODE_BACK);
-
-	m_barrel_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	m_barrel_mat->addTexture(m_barrel_tex);
-	m_barrel_mat->setCullMode(CULL_MODE_BACK);
-
-	m_brick_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	m_brick_mat->addTexture(m_brick_tex);
-	m_brick_mat->setCullMode(CULL_MODE_BACK);
-
-	m_windows_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	m_windows_mat->addTexture(m_windows_tex);
-	m_windows_mat->setCullMode(CULL_MODE_BACK);
-
-	m_wood_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	m_wood_mat->addTexture(m_wood_tex);
-	m_wood_mat->setCullMode(CULL_MODE_BACK);
-
-	// m_earth_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	// m_earth_mat->addTexture(m_earth_color_tex);
-	// m_earth_mat->setCullMode(CULL_MODE_BACK);
-
-	// m_bricks_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	// m_bricks_mat->addTexture(m_bricks_tex);
-	// m_bricks_mat->setCullMode(CULL_MODE_BACK);
+	m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
+	m_base_mat->setCullMode(CULL_MODE_BACK);
 
 	m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
 	m_sky_mat->addTexture(m_sky_tex);
@@ -296,10 +224,10 @@ void SpaceShooterGame::onKeyDown(int key)
 		m_forward = -1.0f;
 		break;
 	case 'A':
-		m_right = -1.0f;
+		m_rightward = -1.0f;
 		break;
 	case 'D':
-		m_right = 1.0f;
+		m_rightward = 1.0f;
 		break;
 	case 'Q':
 		m_up = -1.0f;
@@ -307,20 +235,14 @@ void SpaceShooterGame::onKeyDown(int key)
 	case 'E':
 		m_up = 1.0f;
 		break;
-	case 'O':
-		m_light_radius -= 1.0f * m_delta_time;
-		break;
-	case 'P':
-		m_light_radius += 1.0f * m_delta_time;
-		break;
 	}
 }
 
 void SpaceShooterGame::onKeyUp(int key)
 {
 	m_forward = 0.0f;
+	m_rightward = 0.0f;
 	m_up = 0.0f;
-	m_right = 0.0f;
 
 	switch (key)
 	{
@@ -375,10 +297,8 @@ void SpaceShooterGame::onRightMouseUp(const Point& mouse_pos)
 
 void SpaceShooterGame::onMiddleMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 2.0f;
 }
 
 void SpaceShooterGame::onMiddleMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
 }
