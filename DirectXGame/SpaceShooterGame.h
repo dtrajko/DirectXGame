@@ -61,9 +61,14 @@ public:
 private:
 	SwapChainPtr m_swap_chain;
 
+	TexturePtr m_spaceship_tex;
+	MeshPtr m_spaceship_mesh;
+	MaterialPtr m_spaceship_mat;
+
 	TexturePtr m_sky_tex;
 	MeshPtr m_sky_mesh;
 	MaterialPtr m_sky_mat;
+
 	MaterialPtr m_base_mat;
 
 private:

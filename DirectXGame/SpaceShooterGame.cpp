@@ -39,6 +39,12 @@ void SpaceShooterGame::render()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
+	// Render Spaceship
+	m_list_materials.clear();
+	m_list_materials.push_back(m_spaceship_mat);
+	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_list_materials);
+	drawMesh(m_spaceship_mesh, m_list_materials);
+
 	// Render Skybox/sphere
 	m_list_materials.clear();
 	m_list_materials.push_back(m_sky_mat);
@@ -163,14 +169,21 @@ void SpaceShooterGame::onCreate()
 	m_play_state = true;
 	InputSystem::get()->showCursor(false);
 
-	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/stars_map.jpg");
-	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
-
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
+	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/stars_map.jpg");
+	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
+
+	m_spaceship_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/spaceship.jpg");
+	m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/spaceship.obj");
+
 	m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
 	m_base_mat->setCullMode(CULL_MODE_BACK);
+
+	m_spaceship_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_spaceship_mat->addTexture(m_spaceship_tex);
+	m_spaceship_mat->setCullMode(CULL_MODE_BACK);
 
 	m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
 	m_sky_mat->addTexture(m_sky_tex);
