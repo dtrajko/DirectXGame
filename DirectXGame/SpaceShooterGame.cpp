@@ -39,28 +39,6 @@ void SpaceShooterGame::render()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	// Compute transform matrices
-	update();
-
-	//	for (int i = 0; i < 3; i++)
-	//	{
-	//		// Render model
-	//		updateModel(Vector3D(0.0f, 2.0f, -4 + 4.0f * i), m_mat);
-	//		drawMesh(m_torus_mesh, m_mat);
-	//	
-	//		// Render model
-	//		updateModel(Vector3D(4.0f, 2.0f, -4 + 4.0f * i), m_earth_mat);
-	//		drawMesh(m_sky_mesh, m_earth_mat);
-	//	
-	//		// Render model
-	//		updateModel(Vector3D(-4.0f, 2.0f, -4 + 4.0f * i), m_bricks_mat);
-	//		drawMesh(m_suzanne_mesh, m_bricks_mat);
-	//	}
-	//	
-	//	// Render model
-	//	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_mat);
-	//	drawMesh(m_plane_mesh, m_mat);
-
 	// Render Terrain
 	m_list_materials.clear();
 	m_list_materials.push_back(m_terrain_mat);
@@ -140,10 +118,6 @@ void SpaceShooterGame::updateModel(Vector3D position, const std::vector<Material
 {
 	constant cc;
 
-	Matrix4x4 m_light_rot_matrix;
-	m_light_rot_matrix.setIdentity();
-	m_light_rot_matrix.setRotationY(m_light_rot_y);
-
 	cc.m_world.setIdentity();
 	cc.m_world.setTranslation(position);
 	cc.m_view = m_view_cam;
@@ -195,10 +169,8 @@ void SpaceShooterGame::drawMesh(const MeshPtr& mesh, const std::vector<MaterialP
 
 void SpaceShooterGame::updateLight()
 {
-	m_light_rot_y += 1.57f * m_delta_time;
-	float dist_from_origin = 3.0f;
-	// m_light_position = Vector4D(cos(m_light_rot_y) * dist_from_origin, 1.1f, sin(m_light_rot_y) * dist_from_origin, 1.0f);
-	m_light_position = Vector4D(180.0f, 140.0f, 70.0f, 1.0f);
+	m_light_rot_matrix.setIdentity();
+	m_light_rot_matrix.setRotationY(0.707f);
 }
 
 SpaceShooterGame::~SpaceShooterGame()
@@ -240,7 +212,7 @@ void SpaceShooterGame::onCreate()
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	m_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"PointLightPixelShader.hlsl");
+	m_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
 	m_mat->addTexture(m_wall_tex);
 	m_mat->setCullMode(CULL_MODE_BACK);
 
@@ -272,7 +244,7 @@ void SpaceShooterGame::onCreate()
 	// m_bricks_mat->addTexture(m_bricks_tex);
 	// m_bricks_mat->setCullMode(CULL_MODE_BACK);
 
-	m_sky_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"SkyBoxShader.hlsl");
+	m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
 	m_sky_mat->addTexture(m_sky_tex);
 	m_sky_mat->setCullMode(CULL_MODE_FRONT);
 
@@ -285,6 +257,8 @@ void SpaceShooterGame::onUpdate()
 {
 	Window::onUpdate();
 	InputSystem::get()->update();
+
+	update();
 	render();
 }
 

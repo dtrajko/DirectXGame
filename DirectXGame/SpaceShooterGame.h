@@ -119,14 +119,15 @@ private:
 
 	float m_time = 0.0f;
 	float m_light_radius = 500.0f;
+	float m_attenuation = 22.0f; // where this comes from?
+	bool m_anim = false; // where this comes from?
 
 	float m_cam_speed = 0.05f;
 
+	Matrix4x4 m_light_rot_matrix;
 	bool m_play_state = false;
 	bool m_fullscreen_state = false;
-
 	std::vector<MaterialPtr> m_list_materials;
-
 	Vector4D m_light_position;
 
 };
