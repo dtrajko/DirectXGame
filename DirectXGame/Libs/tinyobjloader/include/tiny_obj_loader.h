@@ -1657,7 +1657,11 @@ static std::string JoinPath(const std::string &dir,
     char lastChar = *dir.rbegin();
     if (lastChar != '/') {
       return dir + std::string("/") + filename;
-    } else {
+    } 
+	else if (lastChar != '\\') {
+		return dir + std::string("\\") + filename;
+	}
+	else {
       return dir + filename;
     }
   }

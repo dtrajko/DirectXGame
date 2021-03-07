@@ -43,4 +43,5 @@ public:
 
 	virtual void onMiddleMouseDown(const Point& mouse_pos) = 0;
 	virtual void onMiddleMouseUp(const Point& mouse_pos) = 0;
+
 };

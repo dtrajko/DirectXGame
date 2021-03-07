@@ -43,6 +43,21 @@ public:
 		this->m_w = -(v1.m_x * (v2.m_y * v3.m_z - v3.m_y * v2.m_z) - v1.m_y * (v2.m_x * v3.m_z - v3.m_x * v2.m_z) + v1.m_z * (v2.m_x * v3.m_y - v3.m_x * v2.m_y));
 	}
 
+	Vector4D operator *(float scalar) const
+	{
+		return Vector4D(m_x * scalar, m_y * scalar, m_z * scalar, m_w * scalar);
+	}
+
+	Vector4D operator +(const Vector4D other) const
+	{
+		return Vector4D(m_x + other.m_x, m_y + other.m_y, m_z + other.m_z, m_w + other.m_w);
+	}
+
+	Vector4D operator -(const Vector4D other) const
+	{
+		return Vector4D(m_x - other.m_x, m_y - other.m_y, m_z - other.m_z, m_w - other.m_w);
+	}
+
 	void print()
 	{
 		std::cout << "[x]: " << m_x << " [y]: " << m_y << " [z]: " << m_z << " [w]: " << m_w << std::endl;

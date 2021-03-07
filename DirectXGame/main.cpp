@@ -11,7 +11,7 @@
 
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
-#include "SpaceShooterGame.h"
+#include "BumpMappingDemo.h"
 
 #include <exception>
 
@@ -28,7 +28,7 @@ int main()
 	{
 		try
 		{
-			SpaceShooterGame app;
+			BumpMappingDemo app;
 			while (app.isRunning())
 			{
 				app.broadcast();

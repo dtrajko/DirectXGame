@@ -28,14 +28,24 @@ public:
 		return v;
 	}
 
-	Vector3D operator *(float scalar)
+	Vector3D operator *(float scalar) const
 	{
 		return Vector3D(m_x * scalar, m_y * scalar, m_z * scalar);
 	}
 
-	Vector3D operator +(Vector3D other)
+	Vector3D operator +(const Vector3D other) const
 	{
 		return Vector3D(m_x + other.m_x, m_y + other.m_y, m_z + other.m_z);
+	}
+
+	Vector3D operator -(const Vector3D other) const
+	{
+		return Vector3D(m_x - other.m_x, m_y - other.m_y, m_z - other.m_z);
+	}
+
+	static Vector3D normalize(const Vector3D& vec)
+	{
+	
 	}
 
 	void print()

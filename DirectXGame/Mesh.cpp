@@ -128,3 +128,20 @@ size_t Mesh::getNumMaterialSlots()
 {
 	return m_material_slots.size();
 }
+
+void Mesh::computeTangents(
+	const Vector3D& v0, const Vector3D& v1, const Vector3D& v2, 
+	const Vector2D& t0, const Vector2D& t1, const Vector2D& t2, 
+	Vector3D& tangent, Vector3D& binormal)
+{
+	Vector3D deltaPos1 = v1 - v0;
+	Vector3D deltaPos2 = v2 - v0;
+
+	Vector2D deltaUV1 = t1 - t0;
+	Vector2D deltaUV2 = t2 - t0;
+
+	float r = 1.0f / (deltaUV1.m_x * deltaUV2.m_y - deltaUV1.m_y * deltaUV2.m_x);
+	tangent = (deltaPos1 * deltaUV2.m_y - deltaPos2 * deltaUV1.m_y);
+
+
+}

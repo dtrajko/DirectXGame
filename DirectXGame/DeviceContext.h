@@ -29,6 +29,8 @@ public:
 	void setConstantBuffer(const VertexShaderPtr& vertex_shader, const ConstantBufferPtr& buffer);
 	void setConstantBuffer(const PixelShaderPtr& pixel_shader,  const ConstantBufferPtr& buffer);
 
+	void clearDepthStencil(const SwapChainPtr& swap_chain);
+
 	~DeviceContext();
 
 private:
