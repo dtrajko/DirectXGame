@@ -45,7 +45,26 @@ public:
 
 	static Vector3D normalize(const Vector3D& vec)
 	{
-	
+		Vector3D res;
+		float len = sqrt(vec.m_x * vec.m_x) + (vec.m_y * vec.m_y) + (vec.m_z * vec.m_z);
+		if (!len) {
+			return Vector3D();
+		}
+
+		res.m_x = vec.m_x / len;
+		res.m_y = vec.m_y / len;
+		res.m_z = vec.m_z / len;
+
+		return res;
+	}
+
+	static Vector3D cross(const Vector3D& v1, const Vector3D& v2)
+	{
+		Vector3D res;
+		res.m_x = (v1.m_y * v2.m_z) - (v1.m_z * v2.m_y);
+		res.m_y = (v1.m_z * v2.m_x) - (v1.m_x * v2.m_z);
+		res.m_z = (v1.m_x * v2.m_y) - (v1.m_y * v2.m_x);
+		return res;
 	}
 
 	void print()

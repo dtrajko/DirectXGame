@@ -85,6 +85,9 @@
     <Filter Include="App\BumpMappingDemo">
       <UniqueIdentifier>{bdede611-5b80-47af-80d5-4b4d9ce3e608}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\GlobalShaders\DirLightBumpMapping">
+      <UniqueIdentifier>{11f2fcc3-437c-40ff-9f2d-42aec4c17e7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -282,6 +285,12 @@
     </FxCompile>
     <FxCompile Include="SkyBoxPixelShader.hlsl">
       <Filter>App\GlobalShaders\SkyBox</Filter>
+    </FxCompile>
+    <FxCompile Include="DirLightBumpVS.hlsl">
+      <Filter>App\GlobalShaders\DirLightBumpMapping</Filter>
+    </FxCompile>
+    <FxCompile Include="DirLightBumpPS.hlsl">
+      <Filter>App\GlobalShaders\DirLightBumpMapping</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

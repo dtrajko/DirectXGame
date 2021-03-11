@@ -48,12 +48,12 @@ public:
 		return Vector4D(m_x * scalar, m_y * scalar, m_z * scalar, m_w * scalar);
 	}
 
-	Vector4D operator +(const Vector4D other) const
+	Vector4D operator +(const Vector4D& other) const
 	{
 		return Vector4D(m_x + other.m_x, m_y + other.m_y, m_z + other.m_z, m_w + other.m_w);
 	}
 
-	Vector4D operator -(const Vector4D other) const
+	Vector4D operator -(const Vector4D& other) const
 	{
 		return Vector4D(m_x - other.m_x, m_y - other.m_y, m_z - other.m_z, m_w - other.m_w);
 	}

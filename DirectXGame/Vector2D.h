@@ -32,12 +32,12 @@ public:
 		return Vector2D(m_x * scalar, m_y * scalar);
 	}
 
-	Vector2D operator +(const Vector2D other) const
+	Vector2D operator +(const Vector2D& other) const
 	{
 		return Vector2D(m_x + other.m_x, m_y + other.m_y);
 	}
 
-	Vector2D operator -(const Vector2D other) const
+	Vector2D operator -(const Vector2D& other) const
 	{
 		return Vector2D(m_x - other.m_x, m_y - other.m_y);
 	}

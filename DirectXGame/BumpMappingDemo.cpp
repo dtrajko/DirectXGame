@@ -43,7 +43,7 @@ struct constant
 	Vector4D m_light_direction;
 	Vector4D m_camera_position;
 	Vector4D m_light_position = Vector4D(0, 1, 0, 0);
-	float m_light_radius = 4.0f;
+	float m_light_radius = 10.0f;
 	float m_time = 0.0f;
 
 };
@@ -248,6 +248,7 @@ void BumpMappingDemo::onCreate()
 	m_sphere_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
 
 	m_brick_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick_d.jpg");
+	m_brick_normal_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick_n.jpg");
 
 	m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
 	m_base_mat->setCullMode(CULL_MODE_BACK);
@@ -256,8 +257,9 @@ void BumpMappingDemo::onCreate()
 	m_sky_mat->addTexture(m_sky_tex);
 	m_sky_mat->setCullMode(CULL_MODE_FRONT);
 
-	m_brick_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_brick_mat = GraphicsEngine::get()->createMaterial(L"DirLightBumpVS.hlsl", L"DirLightBumpPS.hlsl");
 	m_brick_mat->addTexture(m_brick_tex);
+	m_brick_mat->addTexture(m_brick_normal_tex);
 	m_brick_mat->setCullMode(CULL_MODE_BACK);
 
 	m_world_cam.setTranslation(Vector3D(0, 0, -2));
