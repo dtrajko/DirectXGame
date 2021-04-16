@@ -162,6 +162,7 @@
     <ClCompile Include="BumpMappingDemo.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
+    <ClCompile Include="FrameBufferDemo.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="BumpMappingDemo.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DeviceContext.h" />
+    <ClInclude Include="FrameBufferDemo.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputListener.h" />
@@ -198,6 +200,7 @@
     <ClInclude Include="MeshManager.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Prerequisites.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />

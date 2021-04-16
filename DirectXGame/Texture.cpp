@@ -48,8 +48,85 @@ Texture::Texture(const wchar_t* full_path) : Resource(full_path)
 	}
 }
 
+Texture::Texture(const Rect& size, Texture::Type type) : Resource(L"")
+{
+	D3D11_TEXTURE2D_DESC tex_desc = {};
+	tex_desc.Width = size.width;
+	tex_desc.Height = size.height;
+
+	if (type == Normal)
+	{
+		tex_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		tex_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	}
+	else if (type == RenderTarget)
+	{
+		tex_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		tex_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	}
+	else if (type == DepthStencil)
+	{
+		tex_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		tex_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	}
+
+	tex_desc.Usage = D3D11_USAGE_DEFAULT;
+	tex_desc.MipLevels = 1;
+	tex_desc.SampleDesc.Count = 1;
+	tex_desc.SampleDesc.Quality = 0;
+	tex_desc.MiscFlags = 0;
+	tex_desc.ArraySize = 1;
+	tex_desc.CPUAccessFlags = 0;
+
+	auto hr = GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateTexture2D(&tex_desc, nullptr, (ID3D11Texture2D**)&m_texture);
+
+	if (FAILED(hr))
+	{
+		throw std::exception("Texture not created successfully (Texture2D).");
+	}
+
+	if (type == Normal || type == RenderTarget)
+	{
+		hr = GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateShaderResourceView(m_texture, NULL, &m_shader_res_view);
+		if (FAILED(hr))
+		{
+			throw std::exception("Texture not created successfully (ShaderResourceView).");
+		}
+	}
+
+	if (type == RenderTarget)
+	{
+		hr = GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateRenderTargetView(m_texture, NULL, &m_render_target_view);
+		if (FAILED(hr))
+		{
+			throw std::exception("Texture not created successfully (RenderTargetView).");
+		}
+	}
+	else if (type == DepthStencil)
+	{
+		hr = GraphicsEngine::get()->getRenderSystem()->m_d3d_device->CreateDepthStencilView(m_texture, NULL, &m_depth_stencil_view);
+		if (FAILED(hr))
+		{
+			throw std::exception("Texture not created successfully (DepthStencilView).");
+		}
+	}
+}
+
 Texture::~Texture()
 {
-	m_shader_res_view->Release();
-	m_texture->Release();
+	if (m_render_target_view) m_render_target_view->Release();
+	if (m_depth_stencil_view) m_depth_stencil_view->Release();
+	if (m_shader_res_view) m_shader_res_view->Release();
+	if (m_sampler_state) m_sampler_state->Release();
+	if (m_texture) m_texture->Release();
+}
+
+Rect Texture::getSize()
+{
+	return m_size;
+}
+
+Texture::Type Texture::getType()
+{
+	return m_type;
 }

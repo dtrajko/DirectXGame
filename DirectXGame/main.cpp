@@ -11,7 +11,7 @@
 
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
-#include "BumpMappingDemo.h"
+#include "FrameBufferDemo.h"
 
 #include <exception>
 
@@ -28,7 +28,7 @@ int main()
 	{
 		try
 		{
-			BumpMappingDemo app;
+			FrameBufferDemo app;
 			while (app.isRunning())
 			{
 				app.broadcast();
