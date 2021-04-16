@@ -32,6 +32,7 @@ SOFTWARE.*/
 #include "InputSystem.h"
 #include "Mesh.h"
 #include "MathUtils.h"
+
 #include <time.h>
 
 
@@ -63,9 +64,10 @@ void FrameBufferDemo::render()
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
 	m_list_materials.clear();
-	m_list_materials.push_back(m_brick_mat);
-	updateModel(Vector3D(0, 0, 0), Vector3D(), Vector3D(1, 1, 1), m_list_materials);
-	drawMesh(m_sphere_mesh, m_list_materials);
+	m_list_materials.push_back(m_monitor_mat);
+	m_list_materials.push_back(m_screen_mat);
+	updateModel(Vector3D(0, 0, 0), Vector3D(0, 3.14f, 0), Vector3D(1, 1, 1), m_list_materials);
+	drawMesh(m_monitor_mesh, m_list_materials);
 
 	//RENDER SKYBOX/SPHERE
 	m_list_materials.clear();
@@ -155,8 +157,6 @@ void FrameBufferDemo::updateThirdPersonCamera()
 	temp.setRotationY(m_current_cam_rot.m_y);
 	world_cam *= temp;
 
-	m_cam_distance = 2.0f;
-
 	m_current_cam_distance = lerp(m_current_cam_distance, m_cam_distance, 2.0f * m_delta_time);
 
 	m_cam_pos = Vector3D();
@@ -197,7 +197,7 @@ void FrameBufferDemo::updateLight()
 	m_light_rot_matrix *= temp;
 
 	temp.setIdentity();
-	temp.setRotationY(0.707f);
+	temp.setRotationY(2.14f);
 	m_light_rot_matrix *= temp;
 }
 
@@ -246,7 +246,7 @@ void FrameBufferDemo::onCreate()
 	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/stars_map.jpg");
 	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
 
-	m_sphere_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
+	m_monitor_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/monitor.obj");
 
 	m_brick_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick_d.jpg");
 	m_brick_normal_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick_n.jpg");
@@ -263,15 +263,29 @@ void FrameBufferDemo::onCreate()
 	m_brick_mat->addTexture(m_brick_normal_tex);
 	m_brick_mat->setCullMode(CULL_MODE_BACK);
 
+	m_monitor_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_monitor_mat->addTexture(m_brick_tex);
+	m_monitor_mat->setCullMode(CULL_MODE_BACK);
+
+	m_screen_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_screen_mat->setCullMode(CULL_MODE_BACK);
+
 	m_world_cam.setTranslation(Vector3D(0, 0, -2));
 
 	m_list_materials.reserve(32);
+
+	m_mini_game.setWindowSize(Rect(rc.right - rc.left, rc.bottom - rc.top));
+	m_mini_game.onCreate();
+
+	m_screen_mat->addTexture(m_mini_game.getRenderTarget());
 }
 
 void FrameBufferDemo::onUpdate()
 {
 	Window::onUpdate();
 	InputSystem::get()->update();
+
+	m_mini_game.onUpdate();
 
 	this->update();
 	this->render();
@@ -300,24 +314,35 @@ void FrameBufferDemo::onSize()
 {
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
+	m_mini_game.setWindowSize(Rect(rc.right - rc.left, rc.bottom - rc.top));
 	this->update();
 	this->render();
 }
 
 void FrameBufferDemo::onKeyDown(int key)
 {
-
+	if (!m_play_state)
+	{
+		m_mini_game.onKeyDown(key);
+	}
 }
 
 void FrameBufferDemo::onKeyUp(int key)
 {
+	if (!m_play_state)
+	{
+		m_mini_game.onKeyUp(key);
+	}
 
 	if (key == VK_ESCAPE)
 	{
 		if (m_play_state)
 		{
 			m_play_state = false;
-			InputSystem::get()->showCursor(!m_play_state);
+		}
+		else if (!m_play_state)
+		{
+			m_play_state = true;
 		}
 	}
 	else if (key == 'F')
@@ -331,26 +356,27 @@ void FrameBufferDemo::onKeyUp(int key)
 
 void FrameBufferDemo::onMouseMove(const Point& mouse_pos)
 {
-	if (!m_play_state) return;
-
 	RECT win_size = this->getClientWindowRect();
 
 	int width = (win_size.right - win_size.left);
 	int height = (win_size.bottom - win_size.top);
 
-	m_delta_mouse_x = (float)(mouse_pos.m_x - (win_size.left + (width / 2.0f)));
-	m_delta_mouse_y = (float)(mouse_pos.m_y - (win_size.top + (height / 2.0f)));
+	if (m_play_state)
+	{
+		m_delta_mouse_x = (float)(mouse_pos.m_x - (win_size.left + (width / 2.0f)));
+		m_delta_mouse_y = (float)(mouse_pos.m_y - (win_size.top + (height / 2.0f)));
+	}
 
 	InputSystem::get()->setCursorPosition(Point(win_size.left + (int)(width / 2.0f), win_size.top + (int)(height / 2.0f)));
+
+	if (!m_play_state)
+	{
+		m_mini_game.onMouseMove(mouse_pos);
+	}
 }
 
 void FrameBufferDemo::onLeftMouseDown(const Point& mouse_pos)
 {
-	if (!m_play_state)
-	{
-		m_play_state = true;
-		InputSystem::get()->showCursor(!m_play_state);
-	}
 }
 
 void FrameBufferDemo::onLeftMouseUp(const Point& mouse_pos)

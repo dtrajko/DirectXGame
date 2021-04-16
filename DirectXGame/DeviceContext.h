@@ -10,7 +10,14 @@ class DeviceContext
 
 public:
 	DeviceContext(ID3D11DeviceContext* device_context, RenderSystem* system);
+
 	void clearRenderTargetColor(const SwapChainPtr& swap_chain, float red, float green, float blue, float alpha);
+	void clearDepthStencil(const SwapChainPtr& swap_chain);
+
+	void clearRenderTargetColor(const TexturePtr& render_target, float red, float green, float blue, float alpha);
+	void clearDepthStencil(const TexturePtr& depth_stencil);
+
+	void setRenderTarget(const TexturePtr& render_target, const TexturePtr& depth_stencil);
 
 	void setVertexBuffer(const VertexBufferPtr& vertex_buffer);
 	void setIndexBuffer(const IndexBufferPtr& index_buffer);
@@ -29,7 +36,6 @@ public:
 	void setConstantBuffer(const VertexShaderPtr& vertex_shader, const ConstantBufferPtr& buffer);
 	void setConstantBuffer(const PixelShaderPtr& pixel_shader,  const ConstantBufferPtr& buffer);
 
-	void clearDepthStencil(const SwapChainPtr& swap_chain);
 
 	~DeviceContext();
 

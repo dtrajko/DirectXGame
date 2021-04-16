@@ -36,6 +36,7 @@ SOFTWARE.*/
 #include "PixelShader.h"
 #include "InputListener.h"
 #include "Matrix4x4.h"
+#include "MiniGame.h"
 
 
 class FrameBufferDemo : public Window, public InputListener
@@ -84,6 +85,10 @@ private:
 	TexturePtr m_brick_normal_tex;
 	MaterialPtr m_brick_mat;
 
+	MeshPtr m_monitor_mesh;
+	MaterialPtr m_monitor_mat;
+	MaterialPtr m_screen_mat;
+
 	TexturePtr m_sky_tex;
 	MeshPtr m_sky_mesh;
 	MaterialPtr m_sky_mat;
@@ -95,7 +100,7 @@ private:
 	float m_delta_time;
 
 	float m_current_cam_distance;
-	float m_cam_distance = 14.0f;
+	float m_cam_distance = 2.0f;
 	Vector3D m_current_cam_rot;
 	Vector3D m_cam_rot;
 	Vector3D m_cam_pos;
@@ -112,4 +117,7 @@ private:
 	bool m_play_state = false;
 	bool m_fullscreen_state = false;
 	std::vector<MaterialPtr> m_list_materials;
+
+	MiniGame m_mini_game;
+
 };

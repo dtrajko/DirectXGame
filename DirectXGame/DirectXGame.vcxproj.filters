@@ -165,6 +165,9 @@
     <ClCompile Include="FrameBufferDemo.cpp">
       <Filter>App\FrameBufferDemo</Filter>
     </ClCompile>
+    <ClCompile Include="MiniGame.cpp">
+      <Filter>App\FrameBufferDemo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="Rect.h">
       <Filter>GameEngine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniGame.h">
+      <Filter>App\FrameBufferDemo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

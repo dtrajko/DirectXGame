@@ -110,6 +110,9 @@ Texture::Texture(const Rect& size, Texture::Type type) : Resource(L"")
 			throw std::exception("Texture not created successfully (DepthStencilView).");
 		}
 	}
+
+	m_type = type;
+	m_size = size;
 }
 
 Texture::~Texture()
