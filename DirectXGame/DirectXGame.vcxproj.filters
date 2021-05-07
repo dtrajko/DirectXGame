@@ -91,6 +91,9 @@
     <Filter Include="App\FrameBufferDemo">
       <UniqueIdentifier>{645fe522-2387-425e-b861-c6f0f5a43073}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\VillageDemo">
+      <UniqueIdentifier>{36f327d0-360c-4e11-b4e2-53457574267d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -167,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="MiniGame.cpp">
       <Filter>App\FrameBufferDemo</Filter>
+    </ClCompile>
+    <ClCompile Include="VillageDemo.cpp">
+      <Filter>App\VillageDemo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -271,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="MiniGame.h">
       <Filter>App\FrameBufferDemo</Filter>
+    </ClInclude>
+    <ClInclude Include="VillageDemo.h">
+      <Filter>App\VillageDemo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

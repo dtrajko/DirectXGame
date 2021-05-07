@@ -11,9 +11,10 @@
 
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
-#include "FrameBufferDemo.h"
+#include "VillageDemo.h"
 
 #include <exception>
+#include <iostream>
 
 
 int main()
@@ -28,13 +29,14 @@ int main()
 	{
 		try
 		{
-			FrameBufferDemo app;
+			VillageDemo app;
 			while (app.isRunning())
 			{
 				app.broadcast();
 			}
 		}
-		catch (...) {
+		catch (const char* msg) {
+			std::cerr << msg << std::endl;
 			InputSystem::release();
 			GraphicsEngine::release();
 			return -1;

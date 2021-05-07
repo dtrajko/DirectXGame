@@ -28,7 +28,7 @@ float4 psmain(PS_INPUT input) : SV_TARGET
 	float4 color = Color.Sample(ColorSampler, float2(input.texcoord.x, 1.0 - input.texcoord.y));
 
 	// Ambient light
-	float ka = 8.5;
+	float ka = 24.0;
 	float3 ia = float3(0.09, 0.082, 0.082);
 	ia *= (color.rgb);
 
@@ -47,7 +47,7 @@ float4 psmain(PS_INPUT input) : SV_TARGET
 	float ks = 0.0;
 	float is = float3(1.0, 1.0, 1.0);
 	float3 reflected_light = reflect(m_light_direction.xyz, input.normal);
-	float shininess = 30.0;
+	float shininess = 40.0;
 	float amount_specular_light = pow(max(0.0, dot(reflected_light, input.direction_to_camera)), shininess);
 	float3 specular_light = ks * amount_specular_light * is;
 

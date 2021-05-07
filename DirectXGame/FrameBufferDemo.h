@@ -100,7 +100,7 @@ private:
 	float m_delta_time;
 
 	float m_current_cam_distance;
-	float m_cam_distance = 2.0f;
+	float m_cam_distance = 1.6f;
 	Vector3D m_current_cam_rot;
 	Vector3D m_cam_rot;
 	Vector3D m_cam_pos;
