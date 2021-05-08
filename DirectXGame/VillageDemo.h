@@ -51,12 +51,14 @@ public:
 
 	void render();
 	void update();
-	void updateCamera();
-	void updateModel(Vector3D position, const std::vector<MaterialPtr>& list_materials);
+	void updateModel(Vector3D position, Vector3D rotation, Vector3D scale, const std::vector<MaterialPtr>& list_materials);
+	void updateThirdPersonCamera();
 	void updateSkyBox();
 	void updateLight();
+	void updatePlayer();
 
 	void drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& list_materials);
+	void updateViewportProjection();
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -109,9 +111,29 @@ private:
 	float m_light_rot_y = 0.0f;
 
 	float m_scale_cube = 1;
+
+	float m_current_cam_distance;
+	float m_cam_distance = 5.0f;
+	Vector3D m_current_cam_rot;
+	Vector3D m_cam_rot;
+	Vector3D m_cam_pos;
+
+	float m_player_speed;
+	bool m_turbo_mode = false;
+
+	Vector3D m_current_player_pos;
+	Vector3D m_player_pos;
+
+	Vector3D m_current_player_rot;
+	Vector3D m_player_rot;
+
+	float m_delta_mouse_x = 0.0f;
+	float m_delta_mouse_y = 0.0f;
+
 	float m_forward = 0.0f;
-	float m_right = 0.0f;
+	float m_rightward = 0.0f;
 	float m_up = 0.0f;
+
 
 	Matrix4x4 m_world_cam;
 	Matrix4x4 m_view_cam;
@@ -122,6 +144,7 @@ private:
 
 	float m_cam_speed = 0.05f;
 
+	Matrix4x4 m_light_rot_matrix;
 	bool m_play_state = false;
 	bool m_fullscreen_state = false;
 

@@ -72,6 +72,7 @@ public:
 	void updateThirdPersonCamera();
 	void updateSkyBox();
 	void updateLight();
+
 	void drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& list_materials/* MaterialPtr* list_materials, unsigned int size_list_materials*/);
 	void updateViewportProjection();
 private:

@@ -16,6 +16,7 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "Mesh.h"
+#include "MathUtils.h"
 
 
 struct vertex
@@ -49,32 +50,10 @@ void VillageDemo::render()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	// Compute transform matrices
-	update();
-
-	//	for (int i = 0; i < 3; i++)
-	//	{
-	//		// Render model
-	//		updateModel(Vector3D(0.0f, 2.0f, -4 + 4.0f * i), m_mat);
-	//		drawMesh(m_torus_mesh, m_mat);
-	//	
-	//		// Render model
-	//		updateModel(Vector3D(4.0f, 2.0f, -4 + 4.0f * i), m_earth_mat);
-	//		drawMesh(m_sky_mesh, m_earth_mat);
-	//	
-	//		// Render model
-	//		updateModel(Vector3D(-4.0f, 2.0f, -4 + 4.0f * i), m_bricks_mat);
-	//		drawMesh(m_suzanne_mesh, m_bricks_mat);
-	//	}
-	//	
-	//	// Render model
-	//	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_mat);
-	//	drawMesh(m_plane_mesh, m_mat);
-
 	// Render Terrain
 	m_list_materials.clear();
 	m_list_materials.push_back(m_terrain_mat);
-	updateModel(Vector3D(0.0f, 0.0f, 0.0f), m_list_materials);
+	updateModel(Vector3D(0, 0, 0), Vector3D(), Vector3D(1, 1, 1), m_list_materials);
 	drawMesh(m_terrain_mesh, m_list_materials);
 
 	// Render House
@@ -88,7 +67,7 @@ void VillageDemo::render()
 	{
 		for (int j = -1; j <= 1; j++)
 		{
-			updateModel(Vector3D(10.0f * i, 0.0f, 10.0f * j), m_list_materials);
+			updateModel(Vector3D(10.0f * i, 0.0f, 10.0f * j), Vector3D(), Vector3D(1, 1, 1), m_list_materials);
 			drawMesh(m_house_mesh, m_list_materials);
 		}
 	}
@@ -103,34 +82,71 @@ void VillageDemo::render()
 	m_old_delta = m_new_delta;
 	m_new_delta = ::GetTickCount();
 
-	m_delta_time = (m_old_delta) ? ((m_new_delta - m_old_delta) / 1000.0f) : 0;
+	m_delta_time = 1.0f / 60.0f;
 	m_time += m_delta_time;
 }
 
 void VillageDemo::update()
 {
-	updateCamera();
+	updatePlayer();
+	updateThirdPersonCamera();
 	updateLight();
 	updateSkyBox();
 }
 
-void VillageDemo::updateCamera()
+void VillageDemo::updateThirdPersonCamera()
 {
 	Matrix4x4 world_cam, temp;
 	world_cam.setIdentity();
 
+	m_cam_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+	m_cam_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+
+	if (m_cam_rot.m_x >= 1.57f) {
+		m_cam_rot.m_x = 1.57f;
+	}
+	else if (m_cam_rot.m_x <= -1.57f) {
+		m_cam_rot.m_x = -1.57f;
+	}
+
+	m_current_cam_rot = Vector3D::lerp(m_current_cam_rot, m_cam_rot, 3.0f * m_delta_time);
+
 	temp.setIdentity();
-	temp.setRotationX(m_rot_x);
+	temp.setRotationX(m_current_cam_rot.m_x);
 	world_cam *= temp;
 
 	temp.setIdentity();
-	temp.setRotationY(m_rot_y);
+	temp.setRotationY(m_current_cam_rot.m_y);
 	world_cam *= temp;
 
-	Vector3D new_pos = m_world_cam.getTranslation() +
-		world_cam.getXDirection() * (m_right   * m_cam_speed) +
-		world_cam.getYDirection() * (m_up      * m_cam_speed) +
-		world_cam.getZDirection() * (m_forward * m_cam_speed);
+	if (m_forward) {
+		if (m_turbo_mode) {
+			if (m_forward > 0.0f) {
+				m_cam_distance = 5.0f;
+			}
+			else {
+				m_cam_distance = 1.0f;
+			}
+		}
+		else {
+			if (m_forward > 0.0f) {
+				m_cam_distance = 4.0f;
+			}
+			else {
+				m_cam_distance = 2.0f;
+			}
+		}
+	}
+	else {
+		m_cam_distance = 3.0f;
+	}
+
+	m_current_cam_distance = lerp(m_current_cam_distance, m_cam_distance, 2.0f * m_delta_time);
+
+	m_cam_pos = m_current_player_pos;
+
+	Vector3D new_pos = m_cam_pos + world_cam.getZDirection() * (-m_current_cam_distance);
+	new_pos = new_pos + world_cam.getYDirection() * 5.0f;
 
 	world_cam.setTranslation(new_pos);
 
@@ -143,25 +159,42 @@ void VillageDemo::updateCamera()
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	m_proj_cam.setPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
+	m_proj_cam.setPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 5000.0f);
 }
 
-void VillageDemo::updateModel(Vector3D position, const std::vector<MaterialPtr>& list_materials)
+void VillageDemo::updateModel(Vector3D position, Vector3D rotation, Vector3D scale, const std::vector<MaterialPtr>& list_materials)
 {
 	constant cc;
 
-	Matrix4x4 m_light_rot_matrix;
-	m_light_rot_matrix.setIdentity();
-	m_light_rot_matrix.setRotationY(m_light_rot_y);
-
+	Matrix4x4 temp;
 	cc.m_world.setIdentity();
-	cc.m_world.setTranslation(position);
+
+	temp.setIdentity();
+	temp.setScale(scale);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationX(rotation.m_x);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(rotation.m_y);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationZ(rotation.m_z);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setTranslation(position);
+	cc.m_world *= temp;
+
 	cc.m_view = m_view_cam;
 	cc.m_proj = m_proj_cam;
 	cc.m_camera_position = m_world_cam.getTranslation();
 
 	cc.m_light_position = m_light_position;
-	cc.m_light_radius = m_light_radius;
+	cc.m_light_radius = 0.0f;
 	cc.m_light_direction = m_light_rot_matrix.getZDirection();
 	cc.m_time = m_time;
 
@@ -176,12 +209,67 @@ void VillageDemo::updateSkyBox()
 	constant cc;
 
 	cc.m_world.setIdentity();
-	cc.m_world.setScale(Vector3D(100.0f, 100.0f, 100.0f));
+	cc.m_world.setScale(Vector3D(1000.0f, 1000.0f, 1000.0f));
 	cc.m_world.setTranslation(m_world_cam.getTranslation());
 	cc.m_view = m_view_cam;
 	cc.m_proj = m_proj_cam;
 
 	m_sky_mat->setData(&cc, sizeof(constant));
+}
+
+void VillageDemo::updateLight()
+{
+	Matrix4x4 temp;
+	m_light_rot_matrix.setIdentity();
+
+	temp.setIdentity();
+	temp.setRotationX(-0.707f);
+	m_light_rot_matrix *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(0.707f);
+	m_light_rot_matrix *= temp;
+}
+
+void VillageDemo::updatePlayer()
+{
+	Matrix4x4 world_model, temp;
+	world_model.setIdentity();
+
+	m_player_rot.m_x += m_delta_mouse_y * m_delta_time * 0.1f;
+	m_player_rot.m_y += m_delta_mouse_x * m_delta_time * 0.1f;
+
+	if (m_player_rot.m_x >= 1.57f) {
+		m_player_rot.m_x = 1.57f;
+	}
+	else if (m_player_rot.m_x <= -1.57f) {
+		m_player_rot.m_x = -1.57f;
+	}
+
+	m_current_player_rot = Vector3D::lerp(m_current_player_rot, m_player_rot, 5.0f * m_delta_time);
+
+	temp.setIdentity();
+	temp.setRotationX(m_current_player_rot.m_x);
+	world_model *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(m_current_player_rot.m_y);
+	world_model *= temp;
+
+	temp.setIdentity();
+	temp.setRotationZ(m_current_player_rot.m_z);
+	world_model *= temp;
+
+	m_player_speed = 5.0f;
+	if (m_turbo_mode) {
+		m_player_speed = 20.0f;
+	}
+
+	m_player_pos = m_player_pos + world_model.getZDirection() * m_forward * m_player_speed * m_delta_time;
+	m_player_pos = m_player_pos + world_model.getXDirection() * m_rightward * m_player_speed * m_delta_time;
+	m_player_pos = m_player_pos + world_model.getYDirection() * m_up * m_player_speed * m_delta_time;
+
+	m_current_player_pos = Vector3D::lerp(m_current_player_pos, m_player_pos, 3.0f * m_delta_time);
 }
 
 void VillageDemo::drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& list_materials)
@@ -203,12 +291,12 @@ void VillageDemo::drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& 
 	}
 }
 
-void VillageDemo::updateLight()
+void VillageDemo::updateViewportProjection()
 {
-	m_light_rot_y += 1.57f * m_delta_time;
-	float dist_from_origin = 3.0f;
-	// m_light_position = Vector4D(cos(m_light_rot_y) * dist_from_origin, 1.1f, sin(m_light_rot_y) * dist_from_origin, 1.0f);
-	m_light_position = Vector4D(180.0f, 140.0f, 70.0f, 1.0f);
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+
+	m_proj_cam.setPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 5000.0f);
 }
 
 VillageDemo::~VillageDemo()
@@ -220,12 +308,9 @@ void VillageDemo::onCreate()
 	Window::onCreate();
 
 	InputSystem::get()->addListener(this);
+
 	m_play_state = true;
 	InputSystem::get()->showCursor(false);
-
-	// m_wall_tex        = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/wall.jpg");
-	// m_earth_color_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/earth_color.jpg");
-	// m_bricks_tex      = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/brick.png");
 
 	m_sky_tex     = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/sky.jpg");
 
@@ -235,11 +320,6 @@ void VillageDemo::onCreate()
 	m_brick_tex   = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_brick.jpg");
 	m_windows_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_windows.jpg");
 	m_wood_tex    = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/house_wood.jpg");
-
-	// m_mesh         = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
-	// m_torus_mesh   = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/torus.obj");
-	// m_suzanne_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/suzanne.obj");
-	// m_plane_mesh   = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/plane.obj");
 
 	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
 
@@ -274,14 +354,6 @@ void VillageDemo::onCreate()
 	m_wood_mat->addTexture(m_wood_tex);
 	m_wood_mat->setCullMode(CULL_MODE_BACK);
 
-	// m_earth_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	// m_earth_mat->addTexture(m_earth_color_tex);
-	// m_earth_mat->setCullMode(CULL_MODE_BACK);
-
-	// m_bricks_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	// m_bricks_mat->addTexture(m_bricks_tex);
-	// m_bricks_mat->setCullMode(CULL_MODE_BACK);
-
 	m_sky_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
 	m_sky_mat->addTexture(m_sky_tex);
 	m_sky_mat->setCullMode(CULL_MODE_FRONT);
@@ -295,7 +367,12 @@ void VillageDemo::onUpdate()
 {
 	Window::onUpdate();
 	InputSystem::get()->update();
+
+	update();
 	render();
+
+	m_delta_mouse_x = 0.0f;
+	m_delta_mouse_y = 0.0f;
 }
 
 void VillageDemo::onDestroy()
@@ -317,7 +394,9 @@ void VillageDemo::onKillFocus()
 void VillageDemo::onSize()
 {
 	RECT rc = this->getClientWindowRect();
-	m_swap_chain->resize(rc.right, rc.bottom);
+	m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
+
+	update();
 	render();
 }
 
@@ -332,10 +411,10 @@ void VillageDemo::onKeyDown(int key)
 		m_forward = -1.0f;
 		break;
 	case 'A':
-		m_right = -1.0f;
+		m_rightward = -1.0f;
 		break;
 	case 'D':
-		m_right = 1.0f;
+		m_rightward = 1.0f;
 		break;
 	case 'Q':
 		m_up = -1.0f;
@@ -343,11 +422,8 @@ void VillageDemo::onKeyDown(int key)
 	case 'E':
 		m_up = 1.0f;
 		break;
-	case 'O':
-		m_light_radius -= 1.0f * m_delta_time;
-		break;
-	case 'P':
-		m_light_radius += 1.0f * m_delta_time;
+	case VK_SHIFT:
+		m_turbo_mode = true;
 		break;
 	}
 }
@@ -355,19 +431,24 @@ void VillageDemo::onKeyDown(int key)
 void VillageDemo::onKeyUp(int key)
 {
 	m_forward = 0.0f;
-	m_up      = 0.0f;
-	m_right   = 0.0f;
+	m_rightward = 0.0f;
+	m_up = 0.0f;
 
 	switch (key)
 	{
-	case 'G':
-		m_play_state = m_play_state ? false : true;
-		InputSystem::get()->showCursor(!m_play_state);
+	case VK_ESCAPE:
+		if (m_play_state) {
+			m_play_state = false;
+			InputSystem::get()->showCursor(!m_play_state);
+		}
 		break;
 	case 'F':
 		m_fullscreen_state = m_fullscreen_state ? false : true;
 		RECT size_screen = this->getSizeScreen();
 		m_swap_chain->setFullScreen(m_fullscreen_state, size_screen.right, size_screen.bottom);
+		break;
+	case VK_SHIFT:
+		m_turbo_mode = false;
 		break;
 	}
 }
@@ -376,41 +457,41 @@ void VillageDemo::onMouseMove(const Point & mouse_pos)
 {
 	if (!m_play_state) return;
 
-	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
-	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+	RECT win_size = this->getClientWindowRect();
 
-	m_rot_x += (mouse_pos.m_y - (height / 2.0f)) * m_delta_time * 0.1f;
-	m_rot_y += (mouse_pos.m_x - (width / 2.0f)) * m_delta_time * 0.1f;
+	int width = (win_size.right - win_size.left);
+	int height = (win_size.bottom - win_size.top);
 
-	InputSystem::get()->setCursorPosition(Point((int)(width / 2.0f), (int)(height / 2.0f)));
+	m_delta_mouse_x = (int)(mouse_pos.m_x - (win_size.left + (width / 2.0f)));
+	m_delta_mouse_y = (int)(mouse_pos.m_y - (win_size.top + (height / 2.0f)));
+
+	InputSystem::get()->setCursorPosition(Point(win_size.left + (int)(width / 2.0f), win_size.top + (int)(height / 2.0f)));
 }
 
 void VillageDemo::onLeftMouseDown(const Point & mouse_pos)
 {
-	m_scale_cube = 0.5f;
+	if (!m_play_state) {
+		m_play_state = true;
+		InputSystem::get()->showCursor(!m_play_state);
+	}
 }
 
 void VillageDemo::onLeftMouseUp(const Point & mouse_pos)
 {
-	m_scale_cube = 1.0f;
 }
 
 void VillageDemo::onRightMouseDown(const Point & mouse_pos)
 {
-	m_scale_cube = 2.0f;
 }
 
 void VillageDemo::onRightMouseUp(const Point & mouse_pos)
 {
-	m_scale_cube = 1.0f;
 }
 
 void VillageDemo::onMiddleMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 2.0f;
 }
 
 void VillageDemo::onMiddleMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
 }
