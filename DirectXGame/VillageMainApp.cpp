@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 
-#include "FrameBufferDemo.h"
+#include "VillageMainApp.h"
 
 #include <Windows.h>
 #include "Vector3D.h"
@@ -50,11 +50,11 @@ struct constant
 
 };
 
-FrameBufferDemo::FrameBufferDemo()
+VillageMainApp::VillageMainApp()
 {
 }
 
-void FrameBufferDemo::render()
+void VillageMainApp::render()
 {
 	//CLEAR THE RENDER TARGET 
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
@@ -85,14 +85,14 @@ void FrameBufferDemo::render()
 	m_time += m_delta_time;
 }
 
-void FrameBufferDemo::update()
+void VillageMainApp::update()
 {
 	updateThirdPersonCamera();
 	updateLight();
 	updateSkyBox();
 }
 
-void FrameBufferDemo::updateModel(Vector3D position, Vector3D rotation, Vector3D scale, const std::vector<MaterialPtr>& list_materials)
+void VillageMainApp::updateModel(Vector3D position, Vector3D rotation, Vector3D scale, const std::vector<MaterialPtr>& list_materials)
 {
 	constant cc;
 
@@ -134,7 +134,7 @@ void FrameBufferDemo::updateModel(Vector3D position, Vector3D rotation, Vector3D
 	}
 }
 
-void FrameBufferDemo::updateThirdPersonCamera()
+void VillageMainApp::updateThirdPersonCamera()
 {
 	Matrix4x4 world_cam, temp;
 	world_cam.setIdentity();
@@ -174,7 +174,7 @@ void FrameBufferDemo::updateThirdPersonCamera()
 	updateViewportProjection();
 }
 
-void FrameBufferDemo::updateSkyBox()
+void VillageMainApp::updateSkyBox()
 {
 	constant cc;
 
@@ -187,7 +187,7 @@ void FrameBufferDemo::updateSkyBox()
 	m_sky_mat->setData(&cc, sizeof(constant));
 }
 
-void FrameBufferDemo::updateLight()
+void VillageMainApp::updateLight()
 {
 	Matrix4x4 temp;
 	m_light_rot_matrix.setIdentity();
@@ -201,7 +201,7 @@ void FrameBufferDemo::updateLight()
 	m_light_rot_matrix *= temp;
 }
 
-void FrameBufferDemo::drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& list_materials)
+void VillageMainApp::drawMesh(const MeshPtr& mesh, const std::vector<MaterialPtr>& list_materials)
 {
 	for (unsigned int m = 0; m < list_materials.size(); m++)
 	{
@@ -219,7 +219,7 @@ void FrameBufferDemo::drawMesh(const MeshPtr& mesh, const std::vector<MaterialPt
 	}
 }
 
-void FrameBufferDemo::updateViewportProjection()
+void VillageMainApp::updateViewportProjection()
 {
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
@@ -227,11 +227,11 @@ void FrameBufferDemo::updateViewportProjection()
 	m_proj_cam.setPerspectiveFovLH(1.57f, ((float)width / (float)height), 0.1f, 5000.0f);
 }
 
-FrameBufferDemo::~FrameBufferDemo()
+VillageMainApp::~VillageMainApp()
 {
 }
 
-void FrameBufferDemo::onCreate()
+void VillageMainApp::onCreate()
 {
 	Window::onCreate();
 
@@ -270,7 +270,7 @@ void FrameBufferDemo::onCreate()
 	m_screen_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
 	m_screen_mat->setCullMode(CULL_MODE_BACK);
 
-	m_world_cam.setTranslation(Vector3D(0, 0, -2));
+	m_world_cam.setTranslation(Vector3D(0.0f, 0.0f, -2.0f));
 
 	m_list_materials.reserve(32);
 
@@ -280,7 +280,7 @@ void FrameBufferDemo::onCreate()
 	m_screen_mat->addTexture(m_mini_game.getRenderTarget());
 }
 
-void FrameBufferDemo::onUpdate()
+void VillageMainApp::onUpdate()
 {
 	Window::onUpdate();
 	InputSystem::get()->update();
@@ -294,23 +294,23 @@ void FrameBufferDemo::onUpdate()
 	m_delta_mouse_y = 0;
 }
 
-void FrameBufferDemo::onDestroy()
+void VillageMainApp::onDestroy()
 {
 	Window::onDestroy();
 	m_swap_chain->setFullScreen(false, 1, 1);
 }
 
-void FrameBufferDemo::onFocus()
+void VillageMainApp::onFocus()
 {
 	InputSystem::get()->addListener(this);
 }
 
-void FrameBufferDemo::onKillFocus()
+void VillageMainApp::onKillFocus()
 {
 	InputSystem::get()->removeListener(this);
 }
 
-void FrameBufferDemo::onSize()
+void VillageMainApp::onSize()
 {
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
@@ -319,7 +319,7 @@ void FrameBufferDemo::onSize()
 	this->render();
 }
 
-void FrameBufferDemo::onKeyDown(int key)
+void VillageMainApp::onKeyDown(int key)
 {
 	if (!m_play_state)
 	{
@@ -327,7 +327,7 @@ void FrameBufferDemo::onKeyDown(int key)
 	}
 }
 
-void FrameBufferDemo::onKeyUp(int key)
+void VillageMainApp::onKeyUp(int key)
 {
 	if (!m_play_state)
 	{
@@ -354,7 +354,7 @@ void FrameBufferDemo::onKeyUp(int key)
 	}
 }
 
-void FrameBufferDemo::onMouseMove(const Point& mouse_pos)
+void VillageMainApp::onMouseMove(const Point& mouse_pos)
 {
 	RECT win_size = this->getClientWindowRect();
 
@@ -375,26 +375,26 @@ void FrameBufferDemo::onMouseMove(const Point& mouse_pos)
 	}
 }
 
-void FrameBufferDemo::onLeftMouseDown(const Point& mouse_pos)
+void VillageMainApp::onLeftMouseDown(const Point& mouse_pos)
 {
 }
 
-void FrameBufferDemo::onLeftMouseUp(const Point& mouse_pos)
+void VillageMainApp::onLeftMouseUp(const Point& mouse_pos)
 {
 }
 
-void FrameBufferDemo::onRightMouseDown(const Point& mouse_pos)
+void VillageMainApp::onRightMouseDown(const Point& mouse_pos)
 {
 }
 
-void FrameBufferDemo::onRightMouseUp(const Point& mouse_pos)
+void VillageMainApp::onRightMouseUp(const Point& mouse_pos)
 {
 }
 
-void FrameBufferDemo::onMiddleMouseDown(const Point& mouse_pos)
+void VillageMainApp::onMiddleMouseDown(const Point& mouse_pos)
 {
 }
 
-void FrameBufferDemo::onMiddleMouseUp(const Point& mouse_pos)
+void VillageMainApp::onMiddleMouseUp(const Point& mouse_pos)
 {
 }

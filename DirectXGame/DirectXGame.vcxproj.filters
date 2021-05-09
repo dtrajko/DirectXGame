@@ -94,6 +94,9 @@
     <Filter Include="App\VillageDemo">
       <UniqueIdentifier>{36f327d0-360c-4e11-b4e2-53457574267d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\VillageMiniGame">
+      <UniqueIdentifier>{f61c2998-5ca1-4642-b183-152e60c9f083}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -173,6 +176,12 @@
     </ClCompile>
     <ClCompile Include="VillageDemo.cpp">
       <Filter>App\VillageDemo</Filter>
+    </ClCompile>
+    <ClCompile Include="VillageMiniGame.cpp">
+      <Filter>App\VillageMiniGame</Filter>
+    </ClCompile>
+    <ClCompile Include="VillageMainApp.cpp">
+      <Filter>App\VillageMiniGame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +289,12 @@
     </ClInclude>
     <ClInclude Include="VillageDemo.h">
       <Filter>App\VillageDemo</Filter>
+    </ClInclude>
+    <ClInclude Include="VillageMiniGame.h">
+      <Filter>App\VillageMiniGame</Filter>
+    </ClInclude>
+    <ClInclude Include="VillageMainApp.h">
+      <Filter>App\VillageMiniGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

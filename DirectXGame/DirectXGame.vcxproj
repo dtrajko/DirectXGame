@@ -183,6 +183,8 @@
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="VillageDemo.cpp" />
+    <ClCompile Include="VillageMainApp.cpp" />
+    <ClCompile Include="VillageMiniGame.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +222,8 @@
     <ClInclude Include="VertexMesh.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="VillageDemo.h" />
+    <ClInclude Include="VillageMainApp.h" />
+    <ClInclude Include="VillageMiniGame.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@
 
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
-#include "VillageDemo.h"
+#include "FrameBufferDemo.h"
 
 #include <exception>
 #include <iostream>
@@ -29,7 +29,7 @@ int main()
 	{
 		try
 		{
-			VillageDemo app;
+			FrameBufferDemo app;
 			while (app.isRunning())
 			{
 				app.broadcast();
