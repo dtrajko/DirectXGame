@@ -11,7 +11,7 @@
 
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
-#include "FrameBufferDemo.h"
+#include "PostProcessingDemo.h"
 
 #include <exception>
 #include <iostream>
@@ -29,7 +29,7 @@ int main()
 	{
 		try
 		{
-			FrameBufferDemo app;
+			PostProcessingDemo app;
 			while (app.isRunning())
 			{
 				app.broadcast();

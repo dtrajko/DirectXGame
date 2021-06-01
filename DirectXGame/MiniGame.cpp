@@ -347,9 +347,9 @@ void MiniGame::onCreate()
 
 	for (unsigned int i = 0; i < 200; i++)
 	{
-		m_asteroids_pos[i] = Vector3D(rand() % 4000 + (-2000), rand() % 4000 + (-2000), rand() % 4000 + (-2000));
+		m_asteroids_pos[i] = Vector3D(rand() % 4000 + (-2000.0f), rand() % 4000 + (-2000.0f), rand() % 4000 + (-2000.0f));
 		m_asteroids_rot[i] = Vector3D((rand() % 628) / 100.0f, (rand() % 628) / 100.0f, (rand() % 628) / 100.0f);
-		float scale = rand() % 20 + (6);
+		float scale = rand() % 20 + (6.0f);
 		m_asteroids_scale[i] = Vector3D(scale, scale, scale);
 	}
 
@@ -460,8 +460,8 @@ void MiniGame::onMouseMove(const Point& mouse_pos)
 	int width = m_window_size.width;
 	int height = m_window_size.height;
 
-	m_delta_mouse_x = (int)(mouse_pos.m_x - (m_window_size.left + (width / 2.0f)));
-	m_delta_mouse_y = (int)(mouse_pos.m_y - (m_window_size.top + (height / 2.0f)));
+	m_delta_mouse_x = (float)(mouse_pos.m_x - (m_window_size.left + (width / 2.0f)));
+	m_delta_mouse_y = (float)(mouse_pos.m_y - (m_window_size.top + (height / 2.0f)));
 }
 
 void MiniGame::onLeftMouseDown(const Point& mouse_pos)

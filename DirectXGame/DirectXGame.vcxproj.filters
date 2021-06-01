@@ -97,6 +97,12 @@
     <Filter Include="App\VillageMiniGame">
       <UniqueIdentifier>{f61c2998-5ca1-4642-b183-152e60c9f083}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\PostProcessingDemo">
+      <UniqueIdentifier>{bb3e1434-2aba-4770-8152-6dbb27de1ab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\GlobalShaders\PostProcessEffect">
+      <UniqueIdentifier>{0bc7c501-a9b6-441c-b12a-37cbe55084f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -182,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="VillageMainApp.cpp">
       <Filter>App\VillageMiniGame</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessingDemo.cpp">
+      <Filter>App\PostProcessingDemo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,6 +305,9 @@
     <ClInclude Include="VillageMainApp.h">
       <Filter>App\VillageMiniGame</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessingDemo.h">
+      <Filter>App\PostProcessingDemo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader.fx">
@@ -334,5 +346,13 @@
     <FxCompile Include="DirLightBumpPS.hlsl">
       <Filter>App\GlobalShaders\DirLightBumpMapping</Filter>
     </FxCompile>
+    <FxCompile Include="DistortionEffect.hlsl">
+      <Filter>App\GlobalShaders\PostProcessEffect</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PostProcessVS.hlsl">
+      <Filter>App\GlobalShaders\PostProcessEffect</Filter>
+    </None>
   </ItemGroup>
 </Project>

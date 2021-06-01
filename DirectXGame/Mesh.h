@@ -5,6 +5,7 @@
 #include "IndexBuffer.h"
 #include "Vector3D.h"
 #include "Vector2D.h"
+#include "VertexMesh.h"
 
 #include <vector>
 
@@ -22,6 +23,9 @@ class Mesh : public Resource
 public:
 	Mesh();
 	Mesh(const wchar_t* full_path);
+	Mesh(VertexMesh* vertex_list_data, unsigned int vertex_list_size,
+		unsigned int* index_list_data, unsigned int index_list_size,
+		MaterialSlot* material_slot_list_data, unsigned int material_slot_list_size);
 	virtual ~Mesh() override;
 
 	const VertexBufferPtr& getVertexBuffer();
