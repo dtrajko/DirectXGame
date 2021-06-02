@@ -30,63 +30,97 @@ struct constant
 	float m_time = 0.0f;
 };
 
+__declspec(align(16))
+struct DistortionEffectData
+{
+	float m_distortion_level = 1.0f;
+};
+
+
 PostProcessingDemo::PostProcessingDemo()
 {
 }
 
-void PostProcessingDemo::render()
+void PostProcessingDemo::onCreate()
 {
-	// SCENE RENDERED TO A RENDER TARGET
-	//----------------------------------------------
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_render_target, 0, 0.3f, 0.4f, 1);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearDepthStencil(this->m_depth_stencil);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setRenderTarget(this->m_render_target, this->m_depth_stencil);
+	Window::onCreate();
 
+	InputSystem::get()->addListener(this);
+	m_play_state = true;
+	InputSystem::get()->showCursor(false);
 
-	// SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
-	// RECT rc = this->getClientWindowRect();
-	Rect viewport_size = m_render_target->getSize();
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(viewport_size.width, viewport_size.height);
+	RECT rc = this->getClientWindowRect();
+	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	// Render Spaceship
-	m_list_materials.clear();
-	m_list_materials.push_back(m_spaceship_mat);
-	updateModel(m_current_spaceship_pos, m_current_spaceship_rot, Vector3D(1.0f, 1.0f, 1.0f), m_list_materials);
-	drawMesh(m_spaceship_mesh, m_list_materials);
-
-	// Render Asteroids
-	m_list_materials.clear();
-	m_list_materials.push_back(m_asteroid_mat);
-
+	srand((unsigned int)time(NULL));
 	for (unsigned int i = 0; i < 200; i++)
 	{
-		updateModel(m_asteroids_pos[i], m_asteroids_rot[i], m_asteroids_scale[i], m_list_materials);
-		drawMesh(m_asteroid_mesh, m_list_materials);
+		m_asteroids_pos[i] = Vector3D(rand() % 4000 + (-2000.0f), rand() % 4000 + (-2000.0f), rand() % 4000 + (-2000.0f));
+		m_asteroids_rot[i] = Vector3D((rand() % 628) / 100.0f, (rand() % 628) / 100.0f, (rand() % 628) / 100.0f);
+		float scale = rand() % 20 + (6.0f);
+		m_asteroids_scale[i] = Vector3D(scale, scale, scale);
 	}
 
-	// Render Skybox/sphere
-	m_list_materials.clear();
-	m_list_materials.push_back(m_sky_mat);
-	drawMesh(m_sky_mesh, m_list_materials);
+	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/stars_map.jpg");
+	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
 
-	//----------------------------------------------
-	//----------------------------------------------
+	m_spaceship_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/spaceship.jpg");
+	m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/spaceship.obj");
 
-	// CLEAR THE RENDER TARGET 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
-	// SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
-	RECT rc = this->getClientWindowRect();
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
+	m_asteroid_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/asteroid.jpg");
+	m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/asteroid.obj");
+
+	m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
+	m_base_mat->setCullMode(CULL_MODE_BACK);
+
+	m_spaceship_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_spaceship_mat->addTexture(m_spaceship_tex);
+	m_spaceship_mat->setCullMode(CULL_MODE_BACK);
+
+	m_asteroid_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
+	m_asteroid_mat->addTexture(m_asteroid_tex);
+	m_asteroid_mat->setCullMode(CULL_MODE_BACK);
+
+	m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
+	m_sky_mat->addTexture(m_sky_tex);
+	m_sky_mat->setCullMode(CULL_MODE_FRONT);
 
 
-	m_swap_chain->present(true);
+	m_post_process_mat = GraphicsEngine::get()->createMaterial(L"PostProcessVS.hlsl", L"DistortionEffect.hlsl");
+	m_post_process_mat->setCullMode(CULL_MODE_BACK);
 
-	m_old_delta = m_new_delta;
-	m_new_delta = ::GetTickCount();
 
-	// m_delta_time = (m_old_delta) ? ((m_new_delta - m_old_delta) / 1000.0f) : 0;
-	m_delta_time = 1.0f / 60.0f;
-	m_time += m_delta_time;
+	m_world_cam.setTranslation(Vector3D(0.0f, 1.0f, -2.0f));
+
+
+	VertexMesh quad_vertex_list[] = {
+		VertexMesh(Vector3D(-1.0f, -1.0f, 0.0f), Vector2D(0.0f, 1.0f), Vector3D(), Vector3D(), Vector3D()),
+		VertexMesh(Vector3D(-1.0f,  1.0f, 0.0f), Vector2D(0.0f, 0.0f), Vector3D(), Vector3D(), Vector3D()),
+		VertexMesh(Vector3D(1.0f,  1.0f, 0.0f), Vector2D(1.0f, 0.0f), Vector3D(), Vector3D(), Vector3D()),
+		VertexMesh(Vector3D(1.0f, -1.0f, 0.0f), Vector2D(1.0f, 1.0f), Vector3D(), Vector3D(), Vector3D()),
+	};
+
+	unsigned int quad_index_list[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	MaterialSlot quad_mat_slots[] = {
+		{ 0, 6, 0 }
+	};
+
+	m_quad_mesh = GraphicsEngine::get()->getMeshManager()->createMesh(
+		quad_vertex_list, 4,
+		quad_index_list, 6,
+		quad_mat_slots, 1);
+
+
+	m_list_materials.reserve(32);
+
+	m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::RenderTarget);
+	m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::DepthStencil);
+
+	m_post_process_mat->addTexture(m_render_target);
 }
 
 void PostProcessingDemo::update()
@@ -160,7 +194,7 @@ void PostProcessingDemo::updateThirdPersonCamera()
 	if (m_forward) {
 		if (m_turbo_mode) {
 			if (m_forward > 0.0f) {
-				m_cam_distance = 25.0f;
+				m_cam_distance = 19.0f;
 			}
 			else {
 				m_cam_distance = 5.0f;
@@ -318,8 +352,28 @@ void PostProcessingDemo::updateSpaceship()
 	world_model *= temp;
 
 	m_spaceship_speed = 125.0f;
-	if (m_turbo_mode) {
-		m_spaceship_speed = 305.0f;
+	if (m_turbo_mode)
+	{
+		m_spaceship_speed = 600.0f;
+
+		if (m_forward != 0.0f)
+		{
+			m_distortion_level -= m_delta_time * 1.0f;
+
+			if (m_distortion_level <= 0.6f)
+			{
+				m_distortion_level = 0.6f;
+			}
+		}
+	}
+	else
+	{
+		m_distortion_level += m_delta_time * 0.4f;
+
+		if (m_distortion_level >= 1.0f)
+		{
+			m_distortion_level = 1.0f;
+		}
 	}
 
 	m_spaceship_pos = m_spaceship_pos + world_model.getZDirection() * m_forward * m_spaceship_speed * m_delta_time;
@@ -331,88 +385,6 @@ void PostProcessingDemo::updateSpaceship()
 
 PostProcessingDemo::~PostProcessingDemo()
 {
-}
-
-void PostProcessingDemo::onCreate()
-{
-	Window::onCreate();
-
-	InputSystem::get()->addListener(this);
-	m_play_state = true;
-	InputSystem::get()->showCursor(false);
-
-	RECT rc = this->getClientWindowRect();
-	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
-
-	srand((unsigned int)time(NULL));
-	for (unsigned int i = 0; i < 200; i++)
-	{
-		m_asteroids_pos[i] = Vector3D(rand() % 4000 + (-2000.0f), rand() % 4000 + (-2000.0f), rand() % 4000 + (-2000.0f));
-		m_asteroids_rot[i] = Vector3D((rand() % 628) / 100.0f, (rand() % 628) / 100.0f, (rand() % 628) / 100.0f);
-		float scale = rand() % 20 + (6.0f);
-		m_asteroids_scale[i] = Vector3D(scale, scale, scale);
-	}
-
-	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/stars_map.jpg");
-	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/sphere.obj");
-
-	m_spaceship_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/spaceship.jpg");
-	m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/spaceship.obj");
-
-	m_asteroid_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets/Textures/asteroid.jpg");
-	m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets/Meshes/asteroid.obj");
-
-	m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
-	m_base_mat->setCullMode(CULL_MODE_BACK);
-
-	m_spaceship_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
-	m_spaceship_mat->addTexture(m_spaceship_tex);
-	m_spaceship_mat->setCullMode(CULL_MODE_BACK);
-
-	m_asteroid_mat = GraphicsEngine::get()->createMaterial(m_base_mat);
-	m_asteroid_mat->addTexture(m_asteroid_tex);
-	m_asteroid_mat->setCullMode(CULL_MODE_BACK);
-
-	m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
-	m_sky_mat->addTexture(m_sky_tex);
-	m_sky_mat->setCullMode(CULL_MODE_FRONT);
-
-
-	m_post_process_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
-	m_post_process_mat->setCullMode(CULL_MODE_BACK);
-
-
-	m_world_cam.setTranslation(Vector3D(0.0f, 1.0f, -2.0f));
-
-
-	VertexMesh quad_vertex_list[] = {
-		VertexMesh(Vector3D(-1.0f, -1.0f, 0.0f), Vector2D(0.0f, 1.0f), Vector3D(), Vector3D(), Vector3D()),
-		VertexMesh(Vector3D(-1.0f,  1.0f, 0.0f), Vector2D(0.0f, 0.0f), Vector3D(), Vector3D(), Vector3D()),
-		VertexMesh(Vector3D( 1.0f,  1.0f, 0.0f), Vector2D(1.0f, 0.0f), Vector3D(), Vector3D(), Vector3D()),
-		VertexMesh(Vector3D( 1.0f, -1.0f, 0.0f), Vector2D(1.0f, 1.0f), Vector3D(), Vector3D(), Vector3D()),
-	};
-
-	unsigned int quad_index_list[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	MaterialSlot quad_mat_slots[] = {
-		{ 0, 6, 0 }
-	};
-
-	GraphicsEngine::get()->getMeshManager()->createMesh(
-		quad_vertex_list, 4,
-		quad_index_list, 6,
-		quad_mat_slots, 1);
-
-
-	m_list_materials.reserve(32);
-
-	m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::RenderTarget);
-	m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::DepthStencil);
-
-
 }
 
 void PostProcessingDemo::onUpdate()
@@ -447,6 +419,12 @@ void PostProcessingDemo::onSize()
 {
 	RECT rc = this->getClientWindowRect();
 	m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
+
+	m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::RenderTarget);
+	m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::DepthStencil);
+
+	m_post_process_mat->removeTexture(0);
+	m_post_process_mat->addTexture(m_render_target);
 
 	update();
 	render();
@@ -546,4 +524,69 @@ void PostProcessingDemo::onMiddleMouseDown(const Point& mouse_pos)
 
 void PostProcessingDemo::onMiddleMouseUp(const Point& mouse_pos)
 {
+}
+
+void PostProcessingDemo::render()
+{
+	// SCENE RENDERED TO A RENDER TARGET
+	//----------------------------------------------
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_render_target, 0, 0.3f, 0.4f, 1);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearDepthStencil(this->m_depth_stencil);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setRenderTarget(this->m_render_target, this->m_depth_stencil);
+
+
+	// SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
+	// RECT rc = this->getClientWindowRect();
+	Rect viewport_size = m_render_target->getSize();
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(viewport_size.width, viewport_size.height);
+
+	// Render Spaceship
+	m_list_materials.clear();
+	m_list_materials.push_back(m_spaceship_mat);
+	updateModel(m_current_spaceship_pos, m_current_spaceship_rot, Vector3D(1.0f, 1.0f, 1.0f), m_list_materials);
+	drawMesh(m_spaceship_mesh, m_list_materials);
+
+	// Render Asteroids
+	m_list_materials.clear();
+	m_list_materials.push_back(m_asteroid_mat);
+
+	for (unsigned int i = 0; i < 200; i++)
+	{
+		updateModel(m_asteroids_pos[i], m_asteroids_rot[i], m_asteroids_scale[i], m_list_materials);
+		drawMesh(m_asteroid_mesh, m_list_materials);
+	}
+
+	// Render Skybox/sphere
+	m_list_materials.clear();
+	m_list_materials.push_back(m_sky_mat);
+	drawMesh(m_sky_mesh, m_list_materials);
+
+	//----------------------------------------------
+	//----------------------------------------------
+
+	// CLEAR THE RENDER TARGET 
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+	// SET VIEWPORT OF RENDER TARGET IN WHICH WE HAVE TO DRAW
+	RECT rc = this->getClientWindowRect();
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
+
+
+	DistortionEffectData effect_data;
+	effect_data.m_distortion_level = m_distortion_level;
+
+	m_list_materials.clear();
+	m_list_materials.push_back(m_post_process_mat);
+	m_post_process_mat->setData(&effect_data, sizeof(DistortionEffectData));
+
+	drawMesh(m_quad_mesh, m_list_materials);
+
+
+	m_swap_chain->present(true);
+
+	m_old_delta = m_new_delta;
+	m_new_delta = ::GetTickCount();
+
+	// m_delta_time = (m_old_delta) ? ((m_new_delta - m_old_delta) / 1000.0f) : 0;
+	m_delta_time = 1.0f / 60.0f;
+	m_time += m_delta_time;
 }

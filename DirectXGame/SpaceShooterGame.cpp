@@ -464,8 +464,8 @@ void SpaceShooterGame::onMouseMove(const Point& mouse_pos)
 	int width = (win_size.right - win_size.left);
 	int height = (win_size.bottom - win_size.top);
 
-	m_delta_mouse_x = (int)(mouse_pos.m_x - (win_size.left + (width / 2.0f)));
-	m_delta_mouse_y = (int)(mouse_pos.m_y - (win_size.top + (height / 2.0f)));
+	m_delta_mouse_x = (float)(mouse_pos.m_x - (win_size.left + (width / 2.0f)));
+	m_delta_mouse_y = (float)(mouse_pos.m_y - (win_size.top + (height / 2.0f)));
 
 	InputSystem::get()->setCursorPosition(Point(win_size.left + (int)(width / 2.0f), win_size.top + (int)(height / 2.0f)));
 }

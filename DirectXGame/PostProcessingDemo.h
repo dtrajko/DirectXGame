@@ -131,4 +131,6 @@ private:
 	std::vector<MaterialPtr> m_list_materials;
 	Vector4D m_light_position;
 
+	float m_distortion_level = 1.0f;
+
 };
